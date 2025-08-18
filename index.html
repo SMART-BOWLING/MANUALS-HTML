@@ -48,8 +48,8 @@
       transition: transform 0.2s, box-shadow 0.2s;
     }
     .manual:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-    .preview-container { position: relative; width: 100%; aspect-ratio: 210/297; border-radius: 4px; overflow: hidden; background: #fafafa; }
-    canvas.preview { width: 100%; height: auto; }
+    .preview-container { position: relative; width: 100%; border-radius: 4px; overflow: hidden; background: #fafafa; }
+    canvas.preview { width: 100%; height: auto; display: block; }
     .info { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
     .info h2 { margin: 0; font-size: 17px; font-weight: 600; }
     .btns { display: flex; justify-content: space-between; gap: 10px; }
@@ -129,14 +129,18 @@ async function loadManuals() {
 
       // Загружаем первую страницу PDF для мини-превью
       const canvas = card.querySelector('canvas');
+      const context = canvas.getContext('2d');
       const loadingTask = pdfjsLib.getDocument(rawUrl);
       loadingTask.promise.then(pdf => {
         pdf.getPage(1).then(page => {
-          const viewport = page.getViewport({ scale: 0.5 });
-          const context = canvas.getContext('2d');
-          canvas.height = viewport.height;
-          canvas.width = viewport.width;
-          page.render({ canvasContext: context, viewport: viewport });
+          const viewport = page.getViewport({ scale: 1 });
+          // Масштабируем по ширине контейнера
+          const containerWidth = card.querySelector('.preview-container').clientWidth;
+          const scale = containerWidth / viewport.width;
+          const scaledViewport = page.getViewport({ scale: scale });
+          canvas.width = scaledViewport.width;
+          canvas.height = scaledViewport.height;
+          page.render({ canvasContext: context, viewport: scaledViewport });
         });
       });
     });
@@ -159,6 +163,26 @@ function toggleDropdown() {
   const dropdown = document.getElementById('dropdownMenu');
   dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
 }
+
+window.addEventListener('resize', () => {
+  // При ресайзе перерисовываем мини-превью
+  document.querySelectorAll('.manual').forEach(card => {
+    const canvas = card.querySelector('canvas');
+    const rawUrl = card.querySelector('.btn-download').href;
+    if (!canvas || !rawUrl) return;
+    const context = canvas.getContext('2d');
+    pdfjsLib.getDocument(rawUrl).promise.then(pdf => {
+      pdf.getPage(1).then(page => {
+        const containerWidth = card.querySelector('.preview-container').clientWidth;
+        const scale = containerWidth / page.getViewport({scale:1}).width;
+        const viewport = page.getViewport({scale});
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        page.render({ canvasContext: context, viewport });
+      });
+    });
+  });
+});
 
 document.addEventListener('DOMContentLoaded', loadManuals);
 </script>
