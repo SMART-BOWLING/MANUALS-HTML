@@ -34,41 +34,56 @@ header {
 .btn-open { background:#1f2937; color:white; border:2px solid #1f2937; padding:10px; border-radius:6px; cursor:pointer; margin-top:10px;}
 .btn-open:hover { background:#111827; }
 
-/* Модальное окно PDF */
+/* Модальное окно PDF с анимацией */
 #pdfModal {
-  display:none;
-  position:fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background:rgba(0,0,0,0.85);
-  z-index:10000;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  display: none; /* скрыто до открытия */
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85);
+  z-index: 10000;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
-#pdfIframe { width:95%; height:95%; border:none; border-radius:8px; box-shadow:0 4px 20px rgba(0,0,0,0.5);}
+#pdfModal.show {
+  display: flex;
+  opacity: 1;
+}
+#pdfIframe { 
+  width: 95%; 
+  height: 95%; 
+  border: none; 
+  border-radius: 8px; 
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+#pdfModal.show #pdfIframe {
+  transform: scale(1);
+}
 
 /* Плавающая кнопка закрыть */
 #closePdfBtn {
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  width:50px; height:50px;
-  border-radius:50%;
-  background:rgba(220,20,60,0.9);
-  color:white;
-  font-size:24px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  z-index:10001;
-  box-shadow:0 2px 10px rgba(0,0,0,0.5);
+  display: none; /* скрыта по умолчанию */
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px; height: 50px;
+  border-radius: 50%;
+  background: rgba(220,20,60,0.9);
+  color: white;
+  font-size: 24px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10001;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
   transition: background 0.2s;
 }
-#closePdfBtn:hover {
-  background:rgba(220,20,60,1);
-}
+#closePdfBtn:hover { background: rgba(220,20,60,1); }
+
 </style>
 </head>
 <body>
@@ -116,20 +131,26 @@ async function loadManuals() {
   }
 }
 
-// Открытие PDF через PDF.js viewer
+// Открытие PDF через PDF.js viewer с масштабом page-width и анимацией
 function openPDF(url){
-  const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(url)}`;
+  const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(url)}#zoom=page-width`;
   const modal = document.getElementById('pdfModal');
   const iframe = document.getElementById('pdfIframe');
+  const closeBtn = document.getElementById('closePdfBtn');
+
   iframe.src = viewerUrl;
-  modal.style.display='flex';
+  modal.classList.add('show');
+  closeBtn.style.display = 'flex';
 }
 
 function closePDF(){
   const modal = document.getElementById('pdfModal');
   const iframe = document.getElementById('pdfIframe');
-  iframe.src='';
-  modal.style.display='none';
+  const closeBtn = document.getElementById('closePdfBtn');
+
+  modal.classList.remove('show');
+  closeBtn.style.display = 'none';
+  setTimeout(() => { iframe.src = ''; }, 300); // очистка после анимации
 }
 
 document.addEventListener('DOMContentLoaded', loadManuals);
@@ -137,4 +158,3 @@ document.addEventListener('DOMContentLoaded', loadManuals);
 
 </body>
 </html>
-
