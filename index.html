@@ -1,74 +1,75 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Мануалы</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #e5e7eb;
-      color: #1f2937;
-      padding-top: 70px;
-    }
-    header {
-      background-color: #1f2937;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 20px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      user-select: none;
-      z-index: 1000;
-    }
-    .logo img { width: 40px; height: 40px; object-fit: cover; transform: translateY(4px); }
-    .site-name { flex: 1; text-align: center; font-size: 20px; font-weight: bold; color: white; }
-    .menu-button { width: 30px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; height: 20px; }
-    .menu-button div { height: 4px; background-color: white; border-radius: 2px; }
-    .dropdown {
-      display: none; flex-direction: column; position: absolute; top: 70px; right: 15px;
-      background-color: #1f2937; border: 1px solid #444; border-radius: 8px; overflow: hidden; z-index: 9999; min-width: 150px;
-    }
-    .dropdown a { padding: 10px 15px; text-decoration: none; color: white; display: flex; align-items: center; transition: background 0.3s; }
-    .dropdown a:hover { background-color: #374151; }
-    .icon-space { margin-right: 8px; width: 20px; text-align: center; }
-    .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
-    .manuals { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
-    .manual {
-      background: white; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      padding: 15px; display: flex; flex-direction: column; text-align: center;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .manual:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-    .preview-container { position: relative; width: 100%; border-radius: 4px; overflow: hidden; background: #fafafa; }
-    canvas.preview { width: 100%; height: auto; display: block; }
-    .info { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
-    .info h2 { margin: 0; font-size: 17px; font-weight: 600; }
-    .btns { display: flex; justify-content: space-between; gap: 10px; }
-    .btn { flex: 1; padding: 10px; border-radius: 6px; font-weight: 600; text-decoration: none; text-align: center; transition: 0.2s; cursor: pointer; }
-    .btn-open { background: #1f2937; color: white; border: 2px solid #1f2937; }
-    .btn-open:hover { background: #111827; }
-    .btn-download { background: white; color: #1f2937; border: 2px solid #1f2937; }
-    .btn-download:hover { background: #f9f9f9; }
-    .loading { text-align: center; padding: 20px; font-size: 18px; color: #666; }
-    .error { text-align: center; padding: 20px; color: #dc2626; background: #fee2e2; border-radius: 8px; margin: 20px 0; }
-    @media (max-width: 600px) {
-      .site-name { font-size: 16px; }
-      .manuals { grid-template-columns: 1fr; gap: 15px; }
-      .manual { padding: 10px; }
-      .info h2 { font-size: 15px; }
-      .btn { padding: 8px; font-size: 14px; }
-      .dropdown { top: 60px; right: 10px; min-width: 120px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Мануалы</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #e5e7eb;
+  color: #1f2937;
+  padding-top: 70px;
+}
+header {
+  background-color: #1f2937;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  user-select: none;
+  z-index: 1000;
+}
+.logo img { width: 40px; height: 40px; object-fit: cover; transform: translateY(4px); }
+.site-name { flex: 1; text-align: center; font-size: 20px; font-weight: bold; color: white; }
+.menu-button { width: 30px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; height: 20px; }
+.menu-button div { height: 4px; background-color: white; border-radius: 2px; }
+.dropdown { display: none; flex-direction: column; position: absolute; top: 70px; right: 15px; background-color: #1f2937; border: 1px solid #444; border-radius: 8px; overflow: hidden; z-index: 9999; min-width: 150px; }
+.dropdown a { padding: 10px 15px; text-decoration: none; color: white; display: flex; align-items: center; transition: background 0.3s; }
+.dropdown a:hover { background-color: #374151; }
+.icon-space { margin-right: 8px; width: 20px; text-align: center; }
+.container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+.manuals { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
+.manual {
+  background: white; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 15px; display: flex; flex-direction: column; text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.manual:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+.preview-container { position: relative; width: 100%; border-radius: 4px; overflow: hidden; background: #fafafa; }
+canvas.preview { width: 100%; height: auto; display: block; }
+.info { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+.info h2 { margin: 0; font-size: 17px; font-weight: 600; }
+.btns { display: flex; justify-content: space-between; gap: 10px; }
+.btn { flex: 1; padding: 10px; border-radius: 6px; font-weight: 600; text-decoration: none; text-align: center; transition: 0.2s; cursor: pointer; }
+.btn-open { background: #1f2937; color: white; border: 2px solid #1f2937; }
+.btn-open:hover { background: #111827; }
+.btn-download { background: white; color: #1f2937; border: 2px solid #1f2937; }
+.btn-download:hover { background: #f9f9f9; }
+.loading { text-align: center; padding: 20px; font-size: 18px; color: #666; }
+.error { text-align: center; padding: 20px; color: #dc2626; background: #fee2e2; border-radius: 8px; margin: 20px 0; }
+/* Модальное окно PDF */
+#pdfModal {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8); z-index: 2000; flex-direction: column; align-items: center; justify-content: center;
+}
+#pdfToolbar {
+  display: flex; gap: 10px; background: #1f2937; color: white; padding: 10px; width: 100%; box-sizing: border-box; align-items: center;
+}
+#pdfViewerContainer { flex: 1; overflow: auto; width: 100%; display: flex; justify-content: center; align-items: center; padding: 10px; box-sizing: border-box; }
+#pdfViewer canvas { box-shadow: 0 2px 10px rgba(0,0,0,0.5); margin-bottom: 10px; }
+input#pdfSearch { padding: 5px; border-radius: 4px; border: none; }
+@media (max-width:600px){.manuals{grid-template-columns:1fr;}}
+</style>
 </head>
 <body>
 
@@ -88,10 +89,25 @@
   <div class="manuals" id="container"></div>
 </div>
 
+<!-- Модальное окно PDF -->
+<div id="pdfModal">
+  <div id="pdfToolbar">
+    <button onclick="closePDF()">Закрыть</button>
+    <button onclick="prevPage()">&#8592; Страница</button>
+    <button onclick="nextPage()">Страница &#8594;</button>
+    <span id="pageInfo"></span>
+    <input type="text" id="pdfSearch" placeholder="Поиск..." oninput="searchText()">
+  </div>
+  <div id="pdfViewerContainer"><div id="pdfViewer"></div></div>
+</div>
+
 <script>
 const GITHUB_TOKEN = '';
 const REPO = 'SMART-BOWLING/MANUALS';
 const FOLDER = 'manuals';
+
+let pdfDoc = null, currentPage = 1, totalPage = 0;
+const viewer = document.getElementById('pdfViewer');
 
 async function loadManuals() {
   const loadingElement = document.getElementById('loading');
@@ -100,89 +116,101 @@ async function loadManuals() {
     const headers = {};
     if(GITHUB_TOKEN) headers['Authorization'] = `token ${GITHUB_TOKEN}`;
     const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${FOLDER}`, { headers });
-    if (!response.ok) throw new Error(`Ошибка GitHub: ${response.status}`);
+    if(!response.ok) throw new Error(`Ошибка GitHub: ${response.status}`);
     const data = await response.json();
-    const pdfs = data.filter(file => file.type === 'file' && file.name.toLowerCase().endsWith('.pdf'));
-    if (pdfs.length === 0) { showError('В папке не найдено PDF-файлов'); return; }
-    loadingElement.style.display = 'none';
+    const pdfs = data.filter(file => file.type==='file' && file.name.toLowerCase().endsWith('.pdf'));
+    if(pdfs.length===0){ showError('В папке не найдено PDF-файлов'); return; }
+    loadingElement.style.display='none';
 
     pdfs.forEach(file => {
       const name = file.name.replace('.pdf','').replace(/_/g,' ');
       const rawUrl = `https://raw.githubusercontent.com/${REPO}/main/${FOLDER}/${encodeURIComponent(file.name)}`;
       const card = document.createElement('div');
-      card.className = 'manual';
-      card.innerHTML = `
+      card.className='manual';
+      card.innerHTML=`
         <div class="preview-container"><canvas class="preview"></canvas></div>
         <div class="info">
           <h2>${name}</h2>
           <div class="btns">
-            <a class="btn btn-download" href="${rawUrl}" download="${file.name}">
-              <i class="fas fa-download"></i> Скачать
-            </a>
-            <a class="btn btn-open" href="https://docs.google.com/gview?url=${encodeURIComponent(rawUrl)}&embedded=true" target="_blank">
-              <i class="fas fa-external-link-alt"></i> Открыть
-            </a>
+            <a class="btn btn-download" href="${rawUrl}" download="${file.name}"><i class="fas fa-download"></i> Скачать</a>
+            <button class="btn btn-open" onclick="openPDF('${rawUrl}')"><i class="fas fa-external-link-alt"></i> Открыть</button>
           </div>
         </div>
       `;
       container.appendChild(card);
 
-      // Загружаем первую страницу PDF для мини-превью
       const canvas = card.querySelector('canvas');
       const context = canvas.getContext('2d');
-      const loadingTask = pdfjsLib.getDocument(rawUrl);
-      loadingTask.promise.then(pdf => {
-        pdf.getPage(1).then(page => {
-          const viewport = page.getViewport({ scale: 1 });
-          // Масштабируем по ширине контейнера
+      pdfjsLib.getDocument(rawUrl).promise.then(pdf=>{
+        pdf.getPage(1).then(page=>{
+          const viewport = page.getViewport({scale:1});
           const containerWidth = card.querySelector('.preview-container').clientWidth;
-          const scale = containerWidth / viewport.width;
-          const scaledViewport = page.getViewport({ scale: scale });
-          canvas.width = scaledViewport.width;
-          canvas.height = scaledViewport.height;
-          page.render({ canvasContext: context, viewport: scaledViewport });
+          const scale = containerWidth/viewport.width;
+          const scaledViewport = page.getViewport({scale});
+          canvas.width=scaledViewport.width;
+          canvas.height=scaledViewport.height;
+          page.render({canvasContext:context,viewport:scaledViewport});
         });
       });
     });
-  } catch(error) {
-    console.error(error);
-    showError(error.message);
-    loadingElement.style.display = 'none';
-  }
+  } catch(err){ console.error(err); showError(err.message); loadingElement.style.display='none'; }
 }
 
-function showError(message) {
+function showError(msg){
   const container = document.getElementById('container');
   const errorDiv = document.createElement('div');
-  errorDiv.className = 'error';
-  errorDiv.innerHTML = `<p>${message}</p>`;
+  errorDiv.className='error';
+  errorDiv.textContent=msg;
   container.appendChild(errorDiv);
 }
 
-function toggleDropdown() {
-  const dropdown = document.getElementById('dropdownMenu');
-  dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+// PDF.js полноэкранное открытие
+async function openPDF(url){
+  const modal = document.getElementById('pdfModal');
+  modal.style.display='flex';
+  viewer.innerHTML='';
+  pdfDoc = await pdfjsLib.getDocument(url).promise;
+  totalPage = pdfDoc.numPages;
+  currentPage = 1;
+  renderPage(currentPage);
 }
 
-window.addEventListener('resize', () => {
-  // При ресайзе перерисовываем мини-превью
-  document.querySelectorAll('.manual').forEach(card => {
-    const canvas = card.querySelector('canvas');
-    const rawUrl = card.querySelector('.btn-download').href;
-    if (!canvas || !rawUrl) return;
+function renderPage(num){
+  viewer.innerHTML='';
+  pdfDoc.getPage(num).then(page=>{
+    const viewport = page.getViewport({scale:1.5});
+    const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
-    pdfjsLib.getDocument(rawUrl).promise.then(pdf => {
-      pdf.getPage(1).then(page => {
-        const containerWidth = card.querySelector('.preview-container').clientWidth;
-        const scale = containerWidth / page.getViewport({scale:1}).width;
-        const viewport = page.getViewport({scale});
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        page.render({ canvasContext: context, viewport });
-      });
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+    viewer.appendChild(canvas);
+    page.render({canvasContext:context,viewport});
+    document.getElementById('pageInfo').textContent=`${currentPage} / ${totalPage}`;
+  });
+}
+
+function nextPage(){ if(currentPage<totalPage){ currentPage++; renderPage(currentPage); } }
+function prevPage(){ if(currentPage>1){ currentPage--; renderPage(currentPage); } }
+function closePDF(){ document.getElementById('pdfModal').style.display='none'; pdfDoc=null; viewer.innerHTML=''; }
+
+// Поиск текста (очень простой пример: подсветка совпадений)
+function searchText(){
+  const term = document.getElementById('pdfSearch').value.toLowerCase();
+  if(!term || !pdfDoc) return;
+  pdfDoc.getPage(currentPage).then(page=>{
+    page.getTextContent().then(textContent=>{
+      const textItems = textContent.items.map(i=>i.str).join(' ');
+      if(textItems.toLowerCase().includes(term)){
+        alert(`Найдено на странице ${currentPage}`);
+      }
     });
   });
-});
+}
+
+function toggleDropdown(){
+  const dropdown=document.getElementById('dropdownMenu');
+  dropdown.style.display=dropdown.style.display==='flex'?'none':'flex';
+}
 
 document.addEventListener('DOMContentLoaded', loadManuals);
 </script>
