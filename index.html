@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Мануалы</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     body {
@@ -30,17 +31,13 @@
     }
     .logo img { width: 40px; height: 40px; object-fit: cover; transform: translateY(4px); }
     .site-name { flex: 1; text-align: center; font-size: 20px; font-weight: bold; color: white; }
-    .menu-button {
-      width: 30px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; height: 20px;
-    }
+    .menu-button { width: 30px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; height: 20px; }
     .menu-button div { height: 4px; background-color: white; border-radius: 2px; }
     .dropdown {
       display: none; flex-direction: column; position: absolute; top: 70px; right: 15px;
       background-color: #1f2937; border: 1px solid #444; border-radius: 8px; overflow: hidden; z-index: 9999; min-width: 150px;
     }
-    .dropdown a {
-      padding: 10px 15px; text-decoration: none; color: white; display: flex; align-items: center; transition: background 0.3s;
-    }
+    .dropdown a { padding: 10px 15px; text-decoration: none; color: white; display: flex; align-items: center; transition: background 0.3s; }
     .dropdown a:hover { background-color: #374151; }
     .icon-space { margin-right: 8px; width: 20px; text-align: center; }
     .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
@@ -52,7 +49,7 @@
     }
     .manual:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
     .preview-container { position: relative; width: 100%; aspect-ratio: 210/297; border-radius: 4px; overflow: hidden; background: #fafafa; }
-    .preview { width: 100%; height: 100%; border: none; }
+    canvas.preview { width: 100%; height: auto; }
     .info { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
     .info h2 { margin: 0; font-size: 17px; font-weight: 600; }
     .btns { display: flex; justify-content: space-between; gap: 10px; }
@@ -78,9 +75,7 @@
 <header>
   <div class="logo"><img src="https://i.postimg.cc/wjGzSY92/1.png" alt="Logo"></div>
   <div class="site-name">BLOCKBUSTER</div>
-  <div class="menu-button" onclick="toggleDropdown()">
-    <div></div><div></div><div></div>
-  </div>
+  <div class="menu-button" onclick="toggleDropdown()"><div></div><div></div><div></div></div>
   <div class="dropdown" id="dropdownMenu">
     <a href="https://bowlingblockb.github.io/PARTS/">
       <i class="fas fa-cog icon-space"></i>ДЕТАЛИ
@@ -117,13 +112,7 @@ async function loadManuals() {
       const card = document.createElement('div');
       card.className = 'manual';
       card.innerHTML = `
-        <div class="preview-container">
-          <iframe 
-            class="preview"
-            src="https://docs.google.com/gview?url=${encodeURIComponent(rawUrl)}&embedded=true&chrome=false"
-            loading="lazy"
-          ></iframe>
-        </div>
+        <div class="preview-container"><canvas class="preview"></canvas></div>
         <div class="info">
           <h2>${name}</h2>
           <div class="btns">
@@ -137,6 +126,19 @@ async function loadManuals() {
         </div>
       `;
       container.appendChild(card);
+
+      // Загружаем первую страницу PDF для мини-превью
+      const canvas = card.querySelector('canvas');
+      const loadingTask = pdfjsLib.getDocument(rawUrl);
+      loadingTask.promise.then(pdf => {
+        pdf.getPage(1).then(page => {
+          const viewport = page.getViewport({ scale: 0.5 });
+          const context = canvas.getContext('2d');
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+          page.render({ canvasContext: context, viewport: viewport });
+        });
+      });
     });
   } catch(error) {
     console.error(error);
