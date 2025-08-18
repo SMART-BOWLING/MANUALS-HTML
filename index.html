@@ -31,12 +31,13 @@ header {
 .manuals { display:grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap:20px; }
 .manual { background:white; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); padding:15px; display:flex; flex-direction:column; text-align:center; transition: transform 0.2s, box-shadow 0.2s;}
 .manual:hover { transform: translateY(-5px); box-shadow:0 5px 15px rgba(0,0,0,0.2);}
+.manual h2 { margin:0; font-size:18px; font-weight:600; }
 .btn-open { background:#1f2937; color:white; border:2px solid #1f2937; padding:10px; border-radius:6px; cursor:pointer; margin-top:10px;}
 .btn-open:hover { background:#111827; }
 
 /* Модальное окно PDF с анимацией */
 #pdfModal {
-  display: none; /* скрыто до открытия */
+  display: none; /* скрыт до открытия */
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
@@ -84,6 +85,13 @@ header {
 }
 #closePdfBtn:hover { background: rgba(220,20,60,1); }
 
+/* Адаптация под телефон */
+@media (max-width: 600px) {
+  .manuals { grid-template-columns: 1fr; gap: 15px; }
+  .manual { padding: 10px; }
+  .manual h2 { font-size: 16px; }
+  .btn-open { padding: 8px; font-size: 14px; }
+}
 </style>
 </head>
 <body>
@@ -94,7 +102,17 @@ header {
 </header>
 
 <div class="container">
-  <div class="manuals" id="container"></div>
+  <div class="manuals" id="container">
+    <!-- Пример карточек с PDF -->
+    <div class="manual">
+      <h2>Пример PDF 1</h2>
+      <button class="btn-open" onclick="openPDF('https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf')">Открыть PDF</button>
+    </div>
+    <div class="manual">
+      <h2>Пример PDF 2</h2>
+      <button class="btn-open" onclick="openPDF('https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf')">Открыть PDF</button>
+    </div>
+  </div>
 </div>
 
 <!-- Модальное окно PDF -->
@@ -104,33 +122,6 @@ header {
 </div>
 
 <script>
-const REPO = 'SMART-BOWLING/MANUALS';
-const FOLDER = 'manuals';
-
-async function loadManuals() {
-  const container = document.getElementById('container');
-  try {
-    const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${FOLDER}`);
-    if(!response.ok) throw new Error(`Ошибка GitHub: ${response.status}`);
-    const data = await response.json();
-    const pdfs = data.filter(f => f.type==='file' && f.name.toLowerCase().endsWith('.pdf'));
-    pdfs.forEach(file => {
-      const name = file.name.replace('.pdf','').replace(/_/g,' ');
-      const rawUrl = `https://raw.githubusercontent.com/${REPO}/main/${FOLDER}/${encodeURIComponent(file.name)}`;
-      const card = document.createElement('div');
-      card.className='manual';
-      card.innerHTML = `
-        <h2>${name}</h2>
-        <button class="btn-open" onclick="openPDF('${rawUrl}')">Открыть PDF</button>
-      `;
-      container.appendChild(card);
-    });
-  } catch(err){
-    console.error(err);
-    container.innerHTML = `<p>Ошибка: ${err.message}</p>`;
-  }
-}
-
 // Открытие PDF через PDF.js viewer с масштабом page-width и анимацией
 function openPDF(url){
   const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(url)}#zoom=page-width`;
@@ -152,8 +143,6 @@ function closePDF(){
   closeBtn.style.display = 'none';
   setTimeout(() => { iframe.src = ''; }, 300); // очистка после анимации
 }
-
-document.addEventListener('DOMContentLoaded', loadManuals);
 </script>
 
 </body>
