@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Мануалы</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #e5e7eb;
+      color: #1f2937;
+      padding-top: 70px;
+    }
+  
+
+    header {
+      background-color: #1f2937;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      user-select: none;
+      z-index: 1000;
+    }
+
+    .logo img {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      transform: translateY(4px);
+    }
+
+    .site-name {
+      flex: 1;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .menu-button {
+      width: 30px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 20px;
+    }
+
+    .menu-button div {
+      height: 4px;
+      background-color: white;
+      border-radius: 2px;
+    }
+
+    .dropdown {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      top: 70px;
+      right: 15px;
+      background-color: #1f2937;
+      border: 1px solid #444;
+      border-radius: 8px;
+      overflow: hidden;
+      z-index: 9999;
+      min-width: 150px;
+    }
+
+    .dropdown a {
+      padding: 10px 15px;
+      text-decoration: none;
+      color: white;
+      display: flex;
+      align-items: center;
+      transition: background 0.3s;
+    }
+
+    .dropdown a:hover {
+      background-color: #374151;
+    }
+
+    .icon-space {
+      margin-right: 8px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .manuals {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+    }
+
+    .manual {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .manual:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .preview-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 210/297;
+      border-radius: 4px;
+      overflow: hidden;
+      background: #fafafa;
+    }
+
+    .preview {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .info {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .info h2 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .btns {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: 600;
+      text-decoration: none;
+      text-align: center;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+
+    .btn-open {
+      background: #1f2937;
+      color: white;
+      border: 2px solid #1f2937;
+    }
+
+    .btn-open:hover {
+      background: #111827;
+    }
+
+    .btn-download {
+      background: white;
+      color: #1f2937;
+      border: 2px solid #1f2937;
+    }
+
+    .btn-download:hover {
+      background: #f9f9f9;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      font-size: 18px;
+      color: #666;
+    }
+
+    .error {
+      text-align: center;
+      padding: 20px;
+      color: #dc2626;
+      background: #fee2e2;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 600px) {
+      .site-name {
+        font-size: 16px;
+      }
+
+      .manuals {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+
+      .manual {
+        padding: 10px;
+      }
+
+      .info h2 {
+        font-size: 15px;
+      }
+
+      .btn {
+        padding: 8px;
+        font-size: 14px;
+      }
+
+      .dropdown {
+        top: 60px;
+        right: 10px;
+        min-width: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo"><img src="https://i.postimg.cc/wjGzSY92/1.png" alt="Logo"></div>
+    <div class="site-name">BLOCKBUSTER</div>
+    <div class="menu-button" onclick="toggleDropdown()">
+      <div></div><div></div><div></div>
+    </div>
+    <div class="dropdown" id="dropdownMenu">
+      <a href="https://bowlingblockb.github.io/PARTS/">
+        <i class="fas fa-cog icon-space"></i>ДЕТАЛИ
+      </a>
+    </div>
+  </header>
+
+  <div class="container">
+    <div id="loading" class="loading">Загрузка мануалов...</div>
+    <div class="manuals" id="container"></div>
+  </div>
+
+  <script>
+    // 1. ОБНОВЛЕННЫЙ ЗАПРОС К GITHUB
+    const GITHUB_TOKEN = ''; // Оставьте пустым для публичного доступа
+    const REPO = 'SMART-BOWLING/MANUALS';
+    const FOLDER = 'manuals';
+
+    async function loadManuals() {
+      const loadingElement = document.getElementById('loading');
+      const container = document.getElementById('container');
+      
+      try {
+        // Запрос к GitHub API с авторизацией (если токен есть)
+        const headers = {};
+        if(GITHUB_TOKEN) {
+          headers['Authorization'] = `token ${GITHUB_TOKEN}`;
+        }
+
+        const response = await fetch(
+          `https://api.github.com/repos/${REPO}/contents/${FOLDER}`, 
+          { headers }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Ошибка GitHub: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        // 2. ОБРАБОТКА РУССКИХ НАЗВАНИЙ
+        const pdfs = data.filter(file => 
+          file.type === 'file' && 
+          file.name.toLowerCase().endsWith('.pdf')
+        );
+
+        if (pdfs.length === 0) {
+          showError('В папке не найдено PDF-файлов');
+          return;
+        }
+
+        loadingElement.style.display = 'none';
+
+        // 3. СОЗДАЕМ КАРТОЧКИ
+        pdfs.forEach(file => {
+          const name = file.name.replace('.pdf', '').replace(/_/g, ' ');
+          const rawUrl = `https://raw.githubusercontent.com/${REPO}/main/${FOLDER}/${encodeURIComponent(file.name)}`;
+          
+          const card = document.createElement('div');
+          card.className = 'manual';
+          card.innerHTML = `
+            <div class="preview-container">
+              <iframe 
+                class="preview" 
+                src="${rawUrl}#toolbar=0&navpanes=0&view=FitH"
+                loading="lazy"
+              ></iframe>
+            </div>
+            <div class="info">
+              <h2>${name}</h2>
+              <div class="btns">
+                <a class="btn btn-download" href="${rawUrl}" download="${file.name}">
+                  <i class="fas fa-download"></i> Скачать
+                </a>
+                <a class="btn btn-open" href="${rawUrl}" target="_blank">
+                  <i class="fas fa-external-link-alt"></i> Открыть
+                </a>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+      } catch (error) {
+        console.error('Ошибка:', error);
+        showError(error.message);
+        loadingElement.style.display = 'none';
+      }
+    }
+
+    function showError(message) {
+      const container = document.getElementById('container');
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error';
+      errorDiv.innerHTML = `
+        <p>${message}</p>
+        <p>Проверьте:</p>
+        <ul>
+          <li>Репозиторий <strong>${REPO}</strong> существует и публичный</li>
+          <li>Папка <strong>${FOLDER}</strong> содержит PDF-файлы</li>
+          <li>Ваш IP не заблокирован GitHub (попробуйте VPN)</li>
+        </ul>
+      `;
+      container.appendChild(errorDiv);
+    }
+
+    // Запускаем загрузку при открытии страницы
+    document.addEventListener('DOMContentLoaded', loadManuals);
+  </script>
+</body>
+</html>
