@@ -94,64 +94,71 @@
 </div>
 
 <script>
-  const GITHUB_TOKEN = '';
-  const REPO = 'SMART-BOWLING/MANUALS';
-  const FOLDER = 'manuals';
+const GITHUB_TOKEN = '';
+const REPO = 'SMART-BOWLING/MANUALS';
+const FOLDER = 'manuals';
 
-  async function loadManuals() {
-    const loadingElement = document.getElementById('loading');
-    const container = document.getElementById('container');
-    try {
-      const headers = {};
-      if(GITHUB_TOKEN) headers['Authorization'] = `token ${GITHUB_TOKEN}`;
-      const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${FOLDER}`, { headers });
-      if (!response.ok) throw new Error(`Ошибка GitHub: ${response.status}`);
-      const data = await response.json();
-      const pdfs = data.filter(file => file.type === 'file' && file.name.toLowerCase().endsWith('.pdf'));
-      if (pdfs.length === 0) { showError('В папке не найдено PDF-файлов'); return; }
-      loadingElement.style.display = 'none';
+async function loadManuals() {
+  const loadingElement = document.getElementById('loading');
+  const container = document.getElementById('container');
+  try {
+    const headers = {};
+    if(GITHUB_TOKEN) headers['Authorization'] = `token ${GITHUB_TOKEN}`;
+    const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${FOLDER}`, { headers });
+    if (!response.ok) throw new Error(`Ошибка GitHub: ${response.status}`);
+    const data = await response.json();
+    const pdfs = data.filter(file => file.type === 'file' && file.name.toLowerCase().endsWith('.pdf'));
+    if (pdfs.length === 0) { showError('В папке не найдено PDF-файлов'); return; }
+    loadingElement.style.display = 'none';
 
-      pdfs.forEach(file => {
-        const name = file.name.replace('.pdf','').replace(/_/g,' ');
-        const rawUrl = `https://raw.githubusercontent.com/${REPO}/main/${FOLDER}/${encodeURIComponent(file.name)}`;
-        const card = document.createElement('div');
-        card.className = 'manual';
-        card.innerHTML = `
-          <div class="info">
-            <h2>${name}</h2>
-            <div class="btns">
-              <a class="btn btn-download" href="${rawUrl}" download="${file.name}">
-                <i class="fas fa-download"></i> Скачать
-              </a>
-              <a class="btn btn-open" href="https://docs.google.com/gview?url=${encodeURIComponent(rawUrl)}&embedded=true" target="_blank">
-                <i class="fas fa-external-link-alt"></i> Открыть
-              </a>
-            </div>
+    pdfs.forEach(file => {
+      const name = file.name.replace('.pdf','').replace(/_/g,' ');
+      const rawUrl = `https://raw.githubusercontent.com/${REPO}/main/${FOLDER}/${encodeURIComponent(file.name)}`;
+      const card = document.createElement('div');
+      card.className = 'manual';
+      card.innerHTML = `
+        <div class="preview-container">
+          <iframe 
+            class="preview"
+            src="https://docs.google.com/gview?url=${encodeURIComponent(rawUrl)}&embedded=true&chrome=false"
+            loading="lazy"
+          ></iframe>
+        </div>
+        <div class="info">
+          <h2>${name}</h2>
+          <div class="btns">
+            <a class="btn btn-download" href="${rawUrl}" download="${file.name}">
+              <i class="fas fa-download"></i> Скачать
+            </a>
+            <a class="btn btn-open" href="https://docs.google.com/gview?url=${encodeURIComponent(rawUrl)}&embedded=true" target="_blank">
+              <i class="fas fa-external-link-alt"></i> Открыть
+            </a>
           </div>
-        `;
-        container.appendChild(card);
-      });
-    } catch(error) {
-      console.error(error);
-      showError(error.message);
-      loadingElement.style.display = 'none';
-    }
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  } catch(error) {
+    console.error(error);
+    showError(error.message);
+    loadingElement.style.display = 'none';
   }
+}
 
-  function showError(message) {
-    const container = document.getElementById('container');
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error';
-    errorDiv.innerHTML = `<p>${message}</p>`;
-    container.appendChild(errorDiv);
-  }
+function showError(message) {
+  const container = document.getElementById('container');
+  const errorDiv = document.createElement('div');
+  errorDiv.className = 'error';
+  errorDiv.innerHTML = `<p>${message}</p>`;
+  container.appendChild(errorDiv);
+}
 
-  function toggleDropdown() {
-    const dropdown = document.getElementById('dropdownMenu');
-    dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
-  }
+function toggleDropdown() {
+  const dropdown = document.getElementById('dropdownMenu');
+  dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+}
 
-  document.addEventListener('DOMContentLoaded', loadManuals);
+document.addEventListener('DOMContentLoaded', loadManuals);
 </script>
 
 </body>
