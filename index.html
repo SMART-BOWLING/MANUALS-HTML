@@ -106,6 +106,34 @@ header {
 }
 #closePdfBtn:hover { background: rgba(220,20,60,1); }
 
+/* Чат */
+#chat-container {
+  max-width: 800px;
+  margin: 20px auto;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  height: 400px;
+}
+#chat-messages {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+}
+.message { margin-bottom: 12px; line-height: 1.4; }
+.user { text-align: right; color: #dc143c; font-weight: 600; }
+.bot { text-align: left; color: #1f2937; }
+#chat-input { display: flex; border-top: 1px solid #ddd; }
+#chat-input input {
+  flex: 1; padding: 12px; border: none; outline: none; font-size: 15px;
+}
+#chat-input button {
+  background: #dc143c; color: white; border: none;
+  padding: 12px 20px; cursor: pointer; font-size: 15px;
+}
+#chat-input button:hover { background: #b01030; }
 </style>
 </head>
 <body>
@@ -118,6 +146,15 @@ header {
     <a href="https://bowlingblockb.github.io/PARTS/"><i class="fas fa-cog icon-space"></i>ДЕТАЛИ</a>
   </div>
 </header>
+
+<!-- Чат -->
+<div id="chat-container">
+  <div id="chat-messages"></div>
+  <div id="chat-input">
+    <input type="text" id="user-input" placeholder="Задай вопрос по ремонту...">
+    <button onclick="sendMessage()">Отправить</button>
+  </div>
+</div>
 
 <div class="container">
   <div id="loading" class="loading">Загрузка мануалов...</div>
@@ -133,6 +170,7 @@ header {
 <script>
 const REPO = 'SMART-BOWLING/MANUALS';
 const FOLDER = 'manuals';
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwQgHXQoMNp4pODHjDDbSOCKtb8IeqLKrwNO3mgnk1cE4FI6vAJeFiR-V9kpdux-_EHJg/exec"; // сюда вставишь ссылку на WebApp из Google Apps Script
 
 // Загрузка PDF с GitHub
 async function loadManuals() {
@@ -192,6 +230,41 @@ function closePDF(){
 function toggleDropdown() {
   const dropdown = document.getElementById('dropdownMenu');
   dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+}
+
+// Чат
+const chatMessages = document.getElementById("chat-messages");
+const userInput = document.getElementById("user-input");
+
+function addMessage(text, sender) {
+  const msg = document.createElement("div");
+  msg.classList.add("message", sender);
+  msg.textContent = text;
+  chatMessages.appendChild(msg);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+async function sendMessage() {
+  const text = userInput.value.trim();
+  if (!text) return;
+  addMessage(text, "user");
+  userInput.value = "";
+
+  addMessage("ИИ думает...", "bot");
+
+  try {
+    const response = await fetch(GAS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: text })
+    });
+    const data = await response.json();
+    chatMessages.lastChild.remove(); // убираем "думает..."
+    addMessage(data.answer || "Нет ответа", "bot");
+  } catch (err) {
+    chatMessages.lastChild.remove();
+    addMessage("Ошибка: " + err.message, "bot");
+  }
 }
 
 document.addEventListener('DOMContentLoaded', loadManuals);
