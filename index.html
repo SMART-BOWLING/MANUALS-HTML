@@ -28,16 +28,19 @@ header {
 }
 .logo img { width:40px; height:40px; object-fit:cover; transform:translateY(4px);}
 .site-name { flex:1; text-align:center; font-size:20px; font-weight:bold; color:white;}
-.menu-button {
-  width:30px; cursor:pointer; display:flex; flex-direction:column; justify-content:space-between; height:20px;
+.ai-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+  margin-left: 15px;
+  transition: color 0.3s;
 }
-.menu-button div { height:4px; background:white; border-radius:2px; }
-.dropdown {
-  display:none; flex-direction:column; position:absolute; top:70px; right:15px; background:#1f2937; border:1px solid #444; border-radius:8px; overflow:hidden; z-index:9999; min-width:150px;
+.ai-button:hover {
+  color: #d1d5db;
 }
-.dropdown a { padding:10px 15px; text-decoration:none; color:white; display:flex; align-items:center; transition:background 0.3s; }
-.dropdown a:hover { background-color:#374151; }
-.icon-space { margin-right:8px; width:20px; text-align:center; }
 
 .container { max-width:1200px; margin:30px auto; padding:0 20px; }
 .manuals { display:grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap:20px; }
@@ -58,7 +61,7 @@ header {
   .manual { padding:10px; }
   .manual h2 { font-size:16px; }
   .btn-open, .btn-ai { padding:8px; font-size:14px; }
-  .dropdown { top:60px; right:10px; min-width:120px; }
+  .ai-button { font-size: 20px; margin-left: 10px; }
 }
 
 #pdfModal {
@@ -224,7 +227,7 @@ header {
   border: 1px solid #ddd;
   border-radius: 24px;
   outline: none;
-  font-size: 16px; /* Исправлено: размер шрифта 16px чтобы предотвратить зум */
+  font-size: 16px;
 }
 
 #send-button {
@@ -247,51 +250,6 @@ header {
 
 #send-button i {
   font-size: 18px;
-}
-
-/* Кнопка открытия чата */
-#toggle-chat {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: #dc143c;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s, background 0.3s;
-}
-
-#toggle-chat:hover {
-  background: #b01030;
-  transform: scale(1.05);
-}
-
-#toggle-chat i {
-  font-size: 24px;
-}
-
-/* Индикатор новых сообщений */
-#notification-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  width: 20px;
-  height: 20px;
-  background: #ff4757;
-  color: white;
-  border-radius: 50%;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  display: none;
 }
 
 /* Адаптивность для чата */
@@ -330,7 +288,7 @@ header {
   
   #user-input {
     padding: 10px 14px;
-    font-size: 16px; /* Сохраняем 16px даже на маленьких экранах */
+    font-size: 16px;
   }
   
   #send-button {
@@ -349,7 +307,7 @@ header {
   animation: slideIn 0.3s ease;
 }
 
-/* Скрытие основного контента при открытом чата */
+/* Скрытие основного контента при открытом чате */
 body.chat-open {
   overflow: hidden;
 }
@@ -365,10 +323,9 @@ body.chat-open .container {
 <header>
   <div class="logo"><img src="https://i.postimg.cc/wjGzSY92/1.png" alt="Logo"></div>
   <div class="site-name">MANUALS</div>
-  <div class="menu-button" onclick="toggleDropdown()"><div></div><div></div><div></div></div>
-  <div class="dropdown" id="dropdownMenu">
-    <a href="https://bowlingblockb.github.io/PARTS/"><i class="fas fa-cog icon-space"></i>ДЕТАЛИ</a>
-  </div>
+  <button class="ai-button" onclick="openGeneralChat()" title="Помощник AI">
+    <i class="fa-solid fa-brain"></i>
+  </button>
 </header>
 
 <!-- Чат оверлей -->
@@ -387,12 +344,6 @@ body.chat-open .container {
       <i class="fas fa-paper-plane"></i>
     </button>
   </div>
-</div>
-
-<!-- Кнопка открытия чата -->
-<div id="toggle-chat" onclick="openGeneralChat()">
-  <i class="fas fa-robot"></i>
-  <div id="notification-badge"></div>
 </div>
 
 <div class="container">
@@ -438,7 +389,7 @@ async function loadManuals() {
       card.className='manual';
       card.innerHTML = `<h2>${name}</h2>
                         <div class="manual-buttons">
-                          <button class="btn-ai" onclick="openManualChat('${name}', '${rawUrl}')"><i class="fas fa-robot"></i> AI</button>
+                          <button class="btn-ai" onclick="openManualChat('${name}', '${rawUrl}')"><i class="fa-solid fa-brain"></i> AI</button>
                           <button class="btn-open" onclick="openPDF('${rawUrl}')"><i class="fas fa-book"></i> ОТКРЫТЬ</button>
                         </div>`;
       container.appendChild(card);
@@ -473,12 +424,6 @@ function closePDF(){
   setTimeout(()=>{ iframe.src=''; },300);
 }
 
-// Dropdown меню
-function toggleDropdown() {
-  const dropdown = document.getElementById('dropdownMenu');
-  dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
-}
-
 // Функции для работы с чатом
 function openManualChat(manualName, manualUrl) {
   // Устанавливаем контекст текущего мануала
@@ -501,7 +446,6 @@ function openManualChat(manualName, manualUrl) {
   
   // Сбрасываем счетчик новых сообщений
   newMessages = 0;
-  updateNotificationBadge();
   
   // Очищаем предыдущие сообщения и добавляем приветственное
   const chatMessages = document.getElementById('chat-messages');
@@ -533,7 +477,6 @@ function openGeneralChat() {
   
   // Сбрасываем счетчик новых сообщений
   newMessages = 0;
-  updateNotificationBadge();
   
   // Если чат пустой, добавляем приветственное сообщение
   const chatMessages = document.getElementById('chat-messages');
@@ -557,16 +500,6 @@ function closeChat() {
   chatContainer.classList.remove('active');
 }
 
-function updateNotificationBadge() {
-  const badge = document.getElementById('notification-badge');
-  if (newMessages > 0 && !chatOpen) {
-    badge.style.display = 'flex';
-    badge.textContent = newMessages > 9 ? '9+' : newMessages;
-  } else {
-    badge.style.display = 'none';
-  }
-}
-
 function addMessage(text, sender) {
   const chatMessages = document.getElementById('chat-messages');
   const msg = document.createElement('div');
@@ -583,12 +516,6 @@ function addMessage(text, sender) {
   msg.textContent = text;
   chatMessages.appendChild(msg);
   chatMessages.scrollTop = chatMessages.scrollHeight;
-  
-  // Если чат закрыт и пришло новое сообщение от бота, показываем уведомление
-  if (sender === 'bot' && !chatOpen) {
-    newMessages++;
-    updateNotificationBadge();
-  }
 }
 
 async function sendMessage() {
@@ -655,7 +582,7 @@ document.getElementById('chat-overlay').addEventListener('click', closeChat);
 
 // Закрытие чата при нажатии ESC
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape' && chatOpen) {
+  if (e.key === 'Eescape' && chatOpen) {
     closeChat();
   }
 });
