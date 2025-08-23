@@ -221,7 +221,7 @@ header {
   border: 1px solid #ddd;
   border-radius: 24px;
   outline: none;
-  font-size: 16px;
+  font-size: 16px; /* Исправлено: размер шрифта 16px чтобы предотвратить зум */
 }
 
 #send-button {
@@ -327,7 +327,7 @@ header {
   
   #user-input {
     padding: 10px 14px;
-    font-size: 14px;
+    font-size: 16px; /* Сохраняем 16px даже на маленьких экранах */
   }
   
   #send-button {
@@ -379,7 +379,7 @@ body.chat-open .container {
   </div>
   <div id="chat-messages"></div>
   <div id="chat-input-container">
-    <input type="text" id="user-input" placeholder="Задайте вопрос по ремонту..." autocomplete="off">
+    <input type="text" id="user-input" placeholder="Задайте вопрос по ремонту..." autocomplete="off" style="font-size:16px;">
     <button id="send-button" onclick="sendMessage()">
       <i class="fas fa-paper-plane"></i>
     </button>
