@@ -45,10 +45,10 @@ header {
 .manual:hover { transform: translateY(-5px); box-shadow:0 5px 15px rgba(0,0,0,0.2);}
 .manual h2 { margin:0; font-size:18px; font-weight:600; }
 .manual-buttons { display: flex; gap: 10px; margin-top: 15px; }
-.btn-open { background:#1f2937; color:white; border:2px solid #1f2937; padding:10px; border-radius:6px; cursor:pointer; flex: 1;}
+.btn-open { background:#1f2937; color:white; border:2px solid #1f2937; padding:10px; border-radius:6px; cursor:pointer; flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;}
 .btn-open:hover { background:#111827; }
-.btn-ai { background:#dc143c; color:white; border:2px solid #dc143c; padding:10px; border-radius:6px; cursor:pointer; flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;}
-.btn-ai:hover { background:#b01030; }
+.btn-ai { background:#d1d5db; color:#374151; border:2px solid #d1d5db; padding:10px; border-radius:6px; cursor:pointer; flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;}
+.btn-ai:hover { background:#9ca3af; }
 .loading { text-align:center; padding:20px; font-size:18px; color:#666; }
 .error { text-align:center; padding:20px; color:#dc2626; background:#fee2e2; border-radius:8px; margin:20px 0;}
 
@@ -349,7 +349,7 @@ header {
   animation: slideIn 0.3s ease;
 }
 
-/* Скрытие основного контента при открытом чате */
+/* Скрытие основного контента при открытом чата */
 body.chat-open {
   overflow: hidden;
 }
@@ -438,8 +438,8 @@ async function loadManuals() {
       card.className='manual';
       card.innerHTML = `<h2>${name}</h2>
                         <div class="manual-buttons">
-                          <button class="btn-open" onclick="openPDF('${rawUrl}')">Открыть PDF</button>
                           <button class="btn-ai" onclick="openManualChat('${name}', '${rawUrl}')"><i class="fas fa-robot"></i> AI</button>
+                          <button class="btn-open" onclick="openPDF('${rawUrl}')"><i class="fas fa-book"></i> ОТКРЫТЬ</button>
                         </div>`;
       container.appendChild(card);
     });
