@@ -105,76 +105,168 @@ header {
 }
 #closePdfBtn:hover { background: rgba(220,20,60,1); }
 
-/* Чат - модернизированная версия */
+/* Чат - мобильная версия */
 #chat-container {
-  max-width: 400px;
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: none;
-  flex-direction: column;
-  overflow: hidden;
-  z-index: 1000;
-}
-
-#chat-header {
-  background: #1f2937;
-  color: #fff;
-  padding: 10px;
-  font-weight: bold;
+  max-width: 1200px;
+  margin: 20px auto;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  height: 400px;
+  display: none;
+  position: relative;
+  z-index: 800;
 }
-
 #chat-messages {
   flex: 1;
-  padding: 10px;
+  padding: 15px;
   overflow-y: auto;
-  max-height: 300px;
 }
-
-#chat-input {
-  display: flex;
-  border-top: 1px solid #ddd;
-}
-
+.message { margin-bottom: 12px; line-height: 1.4; }
+.user { text-align: right; color: #dc143c; font-weight: 600; }
+.bot { text-align: left; color: #1f2937; }
+#chat-input { display: flex; border-top: 1px solid #ddd; position: relative; }
 #chat-input input {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  outline: none;
+  flex: 1; padding: 12px; border: none; outline: none; font-size: 16px;
+  border-bottom-left-radius: 10px;
 }
-
 #chat-input button {
-  background: #1f2937;
-  color: white;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
+  background: #dc143c; color: white; border: none;
+  padding: 12px 20px; cursor: pointer; font-size: 15px;
+  border-bottom-right-radius: 10px;
 }
+#chat-input button:hover { background: #b01030; }
 
+/* Кнопка открытия чата */
 #toggle-chat {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  background: #1f2937;
+  background: #dc143c;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 900;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  transition: transform 0.3s, background 0.3s;
+}
+#toggle-chat:hover {
+  background: #b01030;
+  transform: scale(1.05);
+}
+#toggle-chat i {
+  font-size: 24px;
 }
 
-#toggle-chat:hover {
-  background: #111827;
+/* Кнопка закрытия чата */
+#close-chat {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #dc143c;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 950;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transition: background 0.2s;
+}
+#close-chat:hover {
+  background: #b01030;
+}
+
+/* Мобильная версия чата */
+@media (max-width: 768px) {
+  #chat-container {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 70vh;
+    margin: 0;
+    border-radius: 15px 15px 0 0;
+    z-index: 1000;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+  
+  #chat-container.mobile-open {
+    transform: translateY(0);
+  }
+  
+  #chat-messages {
+    padding: 50px 15px 60px 15px;
+  }
+  
+  #chat-input {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    z-index: 1001;
+    border-radius: 0;
+  }
+  
+  #chat-input input {
+    border-bottom-left-radius: 0;
+    padding: 16px;
+  }
+  
+  #chat-input button {
+    border-bottom-right-radius: 0;
+    padding: 16px 24px;
+  }
+  
+  #close-chat {
+    top: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    background: #1f2937;
+  }
+  
+  #toggle-chat {
+    bottom: 25px;
+    right: 25px;
+    z-index: 850;
+  }
+}
+
+@media (max-width: 1240px) {
+  #chat-container:not(.mobile-open) {
+    margin: 20px;
+    width: calc(100% - 40px);
+  }
+}
+
+@media (max-width: 600px) {
+  #chat-container:not(.mobile-open) {
+    margin: 15px;
+    width: calc(100% - 30px);
+    height: 350px;
+  }
+  
+  #toggle-chat {
+    bottom: 20px;
+    right: 20px;
+    width: 55px;
+    height: 55px;
+  }
 }
 </style>
 </head>
@@ -191,14 +283,13 @@ header {
 
 <!-- Чат -->
 <div id="chat-container">
-  <div id="chat-header">
-    Чат с AI
-    <span style="cursor: pointer;" onclick="closeChat()">&times;</span>
+  <div id="close-chat" onclick="closeChat()">
+    <i class="fas fa-times"></i>
   </div>
   <div id="chat-messages"></div>
   <div id="chat-input">
-    <input type="text" placeholder="Введите сообщение...">
-    <button>Отправить</button>
+    <input type="text" id="user-input" placeholder="Задай вопрос по ремонту..." style="font-size:16px">
+    <button onclick="sendMessage()">Отправить</button>
   </div>
 </div>
 
@@ -207,25 +298,184 @@ header {
   <i class="fas fa-robot"></i>
 </div>
 
+<div class="container" id="main-container">
+  <div id="loading" class="loading">Загрузка мануалов...</div>
+  <div class="manuals" id="manuals-container"></div>
+</div>
+
+<!-- Модальное окно PDF.js -->
+<div id="pdfModal">
+  <iframe id="pdfIframe"></iframe>
+  <div id="closePdfBtn" onclick="closePDF()">×</div>
+</div>
+
 <script>
-function toggleChat() {
-  const chat = document.getElementById('chat-container');
-  const toggleButton = document.getElementById('toggle-chat');
-  if (chat.style.display === 'none' || chat.style.display === '') {
-    chat.style.display = 'flex';
-    toggleButton.style.display = 'none';
-  } else {
-    chat.style.display = 'none';
-    toggleButton.style.display = 'flex';
+const REPO = 'SMART-BOWLING/MANUALS';
+const FOLDER = 'manuals';
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwQgHXQoMNp4pODHjDDbSOCKtb8IeqLKrwNO3mgnk1cE4FI6vAJeFiR-V9kpdux-_EHJg/exec";
+
+// Загрузка PDF с GitHub
+async function loadManuals() {
+  const loadingEl = document.getElementById('loading');
+  const container = document.getElementById('manuals-container');
+  try {
+    const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${FOLDER}`);
+    if(!response.ok) throw new Error(`Ошибка GitHub: ${response.status}`);
+    const data = await response.json();
+    const pdfs = data.filter(f => f.type==='file' && f.name.toLowerCase().endsWith('.pdf'));
+    if(pdfs.length===0){
+      container.innerHTML = '<div class="error">PDF-файлы не найдены</div>';
+      loadingEl.style.display='none';
+      return;
+    }
+    loadingEl.style.display='none';
+    pdfs.forEach(file => {
+      const name = file.name.replace('.pdf','').replace(/_/g,' ');
+      const rawUrl = `https://raw.githubusercontent.com/${REPO}/main/${FOLDER}/${encodeURIComponent(file.name)}`;
+      const card = document.createElement('div');
+      card.className='manual';
+      card.innerHTML = `<h2>${name}</h2>
+                        <button class="btn-open" onclick="openPDF('${rawUrl}')">Открыть PDF</button>`;
+      container.appendChild(card);
+    });
+  } catch(err){
+    console.error(err);
+    container.innerHTML = `<div class="error">Ошибка: ${err.message}</div>`;
+    loadingEl.style.display='none';
   }
 }
 
-function closeChat() {
-  const chat = document.getElementById('chat-container');
-  const toggleButton = document.getElementById('toggle-chat');
-  chat.style.display = 'none';
-  toggleButton.style.display = 'flex';
+// Открытие PDF через PDF.js
+function openPDF(url){
+  const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(url)}#zoom=page-width`;
+  const modal = document.getElementById('pdfModal');
+  const iframe = document.getElementById('pdfIframe');
+  const closeBtn = document.getElementById('closePdfBtn');
+
+  iframe.src = viewerUrl;
+  modal.classList.add('show');
+  closeBtn.style.display = 'flex';
 }
+
+// Закрытие PDF
+function closePDF(){
+  const modal = document.getElementById('pdfModal');
+  const iframe = document.getElementById('pdfIframe');
+  const closeBtn = document.getElementById('closePdfBtn');
+
+  modal.classList.remove('show');
+  closeBtn.style.display = 'none';
+  setTimeout(()=>{ iframe.src=''; },300);
+}
+
+// Dropdown меню
+function toggleDropdown() {
+  const dropdown = document.getElementById('dropdownMenu');
+  dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+}
+
+// Чат
+const chatMessages = document.getElementById("chat-messages");
+const userInput = document.getElementById("user-input");
+const chatContainer = document.getElementById("chat-container");
+const toggleChatBtn = document.getElementById("toggle-chat");
+const mainContainer = document.getElementById("main-container");
+let isMobile = window.innerWidth <= 768;
+
+function toggleChat() {
+  if (chatContainer.style.display === "none" || chatContainer.style.display === "") {
+    openChat();
+  } else {
+    closeChat();
+  }
+}
+
+function openChat() {
+  if (isMobile) {
+    chatContainer.style.display = "flex";
+    chatContainer.classList.add('mobile-open');
+    document.body.style.overflow = 'hidden';
+  } else {
+    chatContainer.style.display = "flex";
+    mainContainer.style.display = "none";
+  }
+  setTimeout(() => userInput.focus(), 100);
+}
+
+function closeChat() {
+  if (isMobile) {
+    chatContainer.classList.remove('mobile-open');
+    document.body.style.overflow = 'auto';
+    setTimeout(() => {
+      chatContainer.style.display = "none";
+    }, 300);
+  } else {
+    chatContainer.style.display = "none";
+    mainContainer.style.display = "block";
+  }
+}
+
+function addMessage(text, sender) {
+  const msg = document.createElement("div");
+  msg.classList.add("message", sender);
+  msg.textContent = text;
+  chatMessages.appendChild(msg);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+async function sendMessage() {
+  const text = userInput.value.trim();
+  if (!text) return;
+  addMessage(text, "user");
+  userInput.value = "";
+
+  addMessage("ИИ думает...", "bot");
+
+  try {
+    const response = await fetch(GAS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: text })
+    });
+    const data = await response.json();
+    chatMessages.lastChild.remove();
+    addMessage(data.answer || "Нет ответа", "bot");
+  } catch (err) {
+    chatMessages.lastChild.remove();
+    addMessage("Ошибка: " + err.message, "bot");
+  }
+}
+
+// Отправка сообщения по нажатию Enter
+userInput.addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    sendMessage();
+  }
+});
+
+// Закрытие чата по клику вне области на мобильных
+if (isMobile) {
+  document.addEventListener('click', function(e) {
+    if (chatContainer.classList.contains('mobile-open') && 
+        !chatContainer.contains(e.target) && 
+        e.target !== toggleChatBtn && 
+        !toggleChatBtn.contains(e.target)) {
+      closeChat();
+    }
+  });
+}
+
+// Обработка изменения ориентации и размера экрана
+window.addEventListener('resize', function() {
+  isMobile = window.innerWidth <= 768;
+  
+  if (window.innerWidth > 768 && chatContainer.classList.contains('mobile-open')) {
+    chatContainer.classList.remove('mobile-open');
+    document.body.style.overflow = 'auto';
+  }
+});
+
+document.addEventListener('DOMContentLoaded', loadManuals);
 </script>
 </body>
 </html>
