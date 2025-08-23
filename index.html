@@ -44,8 +44,11 @@ header {
 .manual { background:white; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); padding:15px; display:flex; flex-direction:column; text-align:center; transition: transform 0.2s, box-shadow 0.2s;}
 .manual:hover { transform: translateY(-5px); box-shadow:0 5px 15px rgba(0,0,0,0.2);}
 .manual h2 { margin:0; font-size:18px; font-weight:600; }
-.btn-open { background:#1f2937; color:white; border:2px solid #1f2937; padding:10px; border-radius:6px; cursor:pointer; margin-top:10px;}
+.manual-buttons { display: flex; gap: 10px; margin-top: 15px; }
+.btn-open { background:#1f2937; color:white; border:2px solid #1f2937; padding:10px; border-radius:6px; cursor:pointer; flex: 1;}
 .btn-open:hover { background:#111827; }
+.btn-ai { background:#dc143c; color:white; border:2px solid #dc143c; padding:10px; border-radius:6px; cursor:pointer; flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;}
+.btn-ai:hover { background:#b01030; }
 .loading { text-align:center; padding:20px; font-size:18px; color:#666; }
 .error { text-align:center; padding:20px; color:#dc2626; background:#fee2e2; border-radius:8px; margin:20px 0;}
 
@@ -54,7 +57,7 @@ header {
   .manuals { grid-template-columns:1fr; gap:15px; }
   .manual { padding:10px; }
   .manual h2 { font-size:16px; }
-  .btn-open { padding:8px; font-size:14px; }
+  .btn-open, .btn-ai { padding:8px; font-size:14px; }
   .dropdown { top:60px; right:10px; min-width:120px; }
 }
 
@@ -374,7 +377,7 @@ body.chat-open .container {
 <!-- Чат контейнер -->
 <div id="chat-container">
   <div id="chat-header">
-    <h3>Помощник по ремонту</h3>
+    <h3 id="chat-manual-title">Помощник по ремонту</h3>
     <button id="close-chat" onclick="closeChat()">×</button>
   </div>
   <div id="chat-messages"></div>
@@ -387,7 +390,7 @@ body.chat-open .container {
 </div>
 
 <!-- Кнопка открытия чата -->
-<div id="toggle-chat" onclick="openChat()">
+<div id="toggle-chat" onclick="openGeneralChat()">
   <i class="fas fa-robot"></i>
   <div id="notification-badge"></div>
 </div>
@@ -411,6 +414,7 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbwQgHXQoMNp4pODHjDDbSOC
 // Переменные для управления состоянием чата
 let chatOpen = false;
 let newMessages = 0;
+let currentManualContext = null; // {name: "Manual Name", url: "https://..."}
 
 // Загрузка PDF с GitHub
 async function loadManuals() {
@@ -433,7 +437,10 @@ async function loadManuals() {
       const card = document.createElement('div');
       card.className='manual';
       card.innerHTML = `<h2>${name}</h2>
-                        <button class="btn-open" onclick="openPDF('${rawUrl}')">Открыть PDF</button>`;
+                        <div class="manual-buttons">
+                          <button class="btn-open" onclick="openPDF('${rawUrl}')">Открыть PDF</button>
+                          <button class="btn-ai" onclick="openManualChat('${name}', '${rawUrl}')"><i class="fas fa-robot"></i> AI</button>
+                        </div>`;
       container.appendChild(card);
     });
   } catch(err){
@@ -473,7 +480,17 @@ function toggleDropdown() {
 }
 
 // Функции для работы с чатом
-function openChat() {
+function openManualChat(manualName, manualUrl) {
+  // Устанавливаем контекст текущего мануала
+  currentManualContext = {
+    name: manualName,
+    url: manualUrl
+  };
+  
+  // Обновляем заголовок чата
+  document.getElementById('chat-manual-title').textContent = `Помощник: ${manualName}`;
+  
+  // Открываем чат
   const overlay = document.getElementById('chat-overlay');
   const chatContainer = document.getElementById('chat-container');
   
@@ -485,6 +502,44 @@ function openChat() {
   // Сбрасываем счетчик новых сообщений
   newMessages = 0;
   updateNotificationBadge();
+  
+  // Очищаем предыдущие сообщения и добавляем приветственное
+  const chatMessages = document.getElementById('chat-messages');
+  chatMessages.innerHTML = '';
+  
+  addMessage(`Привет! Я ваш помощник по мануалу "${manualName}". Задайте мне вопросы по этому руководству, и я постараюсь помочь.`, 'bot');
+  
+  // Фокусируемся на поле ввода
+  setTimeout(() => {
+    document.getElementById('user-input').focus();
+  }, 300);
+}
+
+function openGeneralChat() {
+  // Сбрасываем контекст мануала
+  currentManualContext = null;
+  
+  // Обновляем заголовок чата
+  document.getElementById('chat-manual-title').textContent = 'Помощник по ремонту';
+  
+  // Открываем чат
+  const overlay = document.getElementById('chat-overlay');
+  const chatContainer = document.getElementById('chat-container');
+  
+  chatOpen = true;
+  document.body.classList.add('chat-open');
+  overlay.classList.add('active');
+  chatContainer.classList.add('active');
+  
+  // Сбрасываем счетчик новых сообщений
+  newMessages = 0;
+  updateNotificationBadge();
+  
+  // Если чат пустой, добавляем приветственное сообщение
+  const chatMessages = document.getElementById('chat-messages');
+  if (chatMessages.children.length === 0) {
+    addMessage('Привет! Я ваш помощник по ремонту оборудования. Задайте мне любой вопрос, и я постараюсь помочь.', 'bot');
+  }
   
   // Фокусируемся на поле ввода
   setTimeout(() => {
@@ -500,14 +555,6 @@ function closeChat() {
   document.body.classList.remove('chat-open');
   overlay.classList.remove('active');
   chatContainer.classList.remove('active');
-}
-
-function toggleChat() {
-  if (chatOpen) {
-    closeChat();
-  } else {
-    openChat();
-  }
 }
 
 function updateNotificationBadge() {
@@ -558,10 +605,20 @@ async function sendMessage() {
   addMessage('ИИ думает...', 'thinking');
   
   try {
+    // Формируем данные для отправки
+    const requestData = {
+      question: text
+    };
+    
+    // Если есть контекст мануала, добавляем его
+    if (currentManualContext) {
+      requestData.context = currentManualContext;
+    }
+    
     const response = await fetch(GAS_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question: text })
+      body: JSON.stringify(requestData)
     });
     
     const data = await response.json();
@@ -606,14 +663,6 @@ document.addEventListener('keydown', function(e) {
 // Инициализация при загрузке
 document.addEventListener('DOMContentLoaded', function() {
   loadManuals();
-  
-  // Добавляем приветственное сообщение при первом открытии
-  setTimeout(() => {
-    if (!localStorage.getItem('chatWelcomed')) {
-      addMessage('Привет! Я ваш помощник по ремонту оборудования. Задайте мне любой вопрос, и я постараюсь помочь.', 'bot');
-      localStorage.setItem('chatWelcomed', 'true');
-    }
-  }, 1000);
 });
 </script>
 </body>
