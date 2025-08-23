@@ -105,7 +105,7 @@ header {
 }
 #closePdfBtn:hover { background: rgba(220,20,60,1); }
 
-/* Чат - изменён для соответствия ширине карточек */
+/* Чат - мобильная версия */
 #chat-container {
   max-width: 1200px;
   margin: 20px auto;
@@ -116,6 +116,8 @@ header {
   flex-direction: column;
   height: 400px;
   display: none;
+  position: relative;
+  z-index: 800;
 }
 #chat-messages {
   flex: 1;
@@ -125,7 +127,7 @@ header {
 .message { margin-bottom: 12px; line-height: 1.4; }
 .user { text-align: right; color: #dc143c; font-weight: 600; }
 .bot { text-align: left; color: #1f2937; }
-#chat-input { display: flex; border-top: 1px solid #ddd; }
+#chat-input { display: flex; border-top: 1px solid #ddd; position: relative; }
 #chat-input input {
   flex: 1; padding: 12px; border: none; outline: none; font-size: 16px;
   border-bottom-left-radius: 10px;
@@ -137,7 +139,7 @@ header {
 }
 #chat-input button:hover { background: #b01030; }
 
-/* Кнопка открытия/закрытия чата */
+/* Кнопка открытия чата */
 #toggle-chat {
   position: fixed;
   bottom: 20px;
@@ -163,25 +165,107 @@ header {
   font-size: 24px;
 }
 
-/* Адаптивность для чата */
-@media (max-width: 1240px) {
+/* Кнопка закрытия чата */
+#close-chat {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #dc143c;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 950;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transition: background 0.2s;
+}
+#close-chat:hover {
+  background: #b01030;
+}
+
+/* Мобильная версия чата */
+@media (max-width: 768px) {
   #chat-container {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 70vh;
+    margin: 0;
+    border-radius: 15px 15px 0 0;
+    z-index: 1000;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+  
+  #chat-container.mobile-open {
+    transform: translateY(0);
+  }
+  
+  #chat-messages {
+    padding: 50px 15px 60px 15px;
+  }
+  
+  #chat-input {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    z-index: 1001;
+    border-radius: 0;
+  }
+  
+  #chat-input input {
+    border-bottom-left-radius: 0;
+    padding: 16px;
+  }
+  
+  #chat-input button {
+    border-bottom-right-radius: 0;
+    padding: 16px 24px;
+  }
+  
+  #close-chat {
+    top: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    background: #1f2937;
+  }
+  
+  #toggle-chat {
+    bottom: 25px;
+    right: 25px;
+    z-index: 850;
+  }
+}
+
+@media (max-width: 1240px) {
+  #chat-container:not(.mobile-open) {
     margin: 20px;
     width: calc(100% - 40px);
   }
 }
 
 @media (max-width: 600px) {
-  #chat-container {
+  #chat-container:not(.mobile-open) {
     margin: 15px;
     width: calc(100% - 30px);
     height: 350px;
   }
+  
   #toggle-chat {
-    bottom: 15px;
-    right: 15px;
-    width: 50px;
-    height: 50px;
+    bottom: 20px;
+    right: 20px;
+    width: 55px;
+    height: 55px;
   }
 }
 </style>
@@ -199,6 +283,9 @@ header {
 
 <!-- Чат -->
 <div id="chat-container">
+  <div id="close-chat" onclick="closeChat()">
+    <i class="fas fa-times"></i>
+  </div>
   <div id="chat-messages"></div>
   <div id="chat-input">
     <input type="text" id="user-input" placeholder="Задай вопрос по ремонту..." style="font-size:16px">
@@ -206,7 +293,7 @@ header {
   </div>
 </div>
 
-<!-- Кнопка открытия/закрытия чата -->
+<!-- Кнопка открытия чата -->
 <div id="toggle-chat" onclick="toggleChat()">
   <i class="fas fa-robot"></i>
 </div>
@@ -225,7 +312,7 @@ header {
 <script>
 const REPO = 'SMART-BOWLING/MANUALS';
 const FOLDER = 'manuals';
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwQgHXQoMNp4pODHjDDbSOCKtb8IeqLKrwNO3mgnk1cE4FI6vAJeFiR-V9kpdux-_EHJg/exec"; // сюда вставишь ссылку на WebApp из Google Apps Script
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwQgHXQoMNp4pODHjDDbSOCKtb8IeqLKrwNO3mgnk1cE4FI6vAJeFiR-V9kpdux-_EHJg/exec";
 
 // Загрузка PDF с GitHub
 async function loadManuals() {
@@ -293,23 +380,40 @@ const userInput = document.getElementById("user-input");
 const chatContainer = document.getElementById("chat-container");
 const toggleChatBtn = document.getElementById("toggle-chat");
 const mainContainer = document.getElementById("main-container");
-const manualsContainer = document.getElementById("manuals-container");
+const isMobile = window.innerWidth <= 768;
 
 function toggleChat() {
-  if (chatContainer.style.display === "none") {
-    // Открываем чат, скрываем мануалы
+  if (chatContainer.style.display === "none" || chatContainer.style.display === "") {
+    openChat();
+  } else {
+    closeChat();
+  }
+}
+
+function openChat() {
+  if (isMobile) {
+    chatContainer.classList.add('mobile-open');
+    document.body.style.overflow = 'hidden';
+  } else {
     chatContainer.style.display = "flex";
     mainContainer.style.display = "none";
-    toggleChatBtn.innerHTML = '<i class="fas fa-books"></i>';
-    toggleChatBtn.style.background = '#1f2937';
-    userInput.focus();
+  }
+  toggleChatBtn.style.display = "none";
+  setTimeout(() => userInput.focus(), 100);
+}
+
+function closeChat() {
+  if (isMobile) {
+    chatContainer.classList.remove('mobile-open');
+    document.body.style.overflow = 'auto';
+    setTimeout(() => {
+      chatContainer.style.display = "none";
+    }, 300);
   } else {
-    // Закрываем чат, показываем мануалы
     chatContainer.style.display = "none";
     mainContainer.style.display = "block";
-    toggleChatBtn.innerHTML = '<i class="fas fa-robot"></i>';
-    toggleChatBtn.style.background = '#dc143c';
   }
+  toggleChatBtn.style.display = "flex";
 }
 
 function addMessage(text, sender) {
@@ -335,7 +439,7 @@ async function sendMessage() {
       body: JSON.stringify({ question: text })
     });
     const data = await response.json();
-    chatMessages.lastChild.remove(); // убираем "думает..."
+    chatMessages.lastChild.remove();
     addMessage(data.answer || "Нет ответа", "bot");
   } catch (err) {
     chatMessages.lastChild.remove();
@@ -347,6 +451,26 @@ async function sendMessage() {
 userInput.addEventListener("keypress", function(e) {
   if (e.key === "Enter") {
     sendMessage();
+  }
+});
+
+// Закрытие чата по клику вне области на мобильных
+if (isMobile) {
+  document.addEventListener('click', function(e) {
+    if (chatContainer.classList.contains('mobile-open') && 
+        !chatContainer.contains(e.target) && 
+        e.target !== toggleChatBtn) {
+      closeChat();
+    }
+  });
+}
+
+// Обработка изменения ориентации и размера экрана
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 768 && chatContainer.classList.contains('mobile-open')) {
+    chatContainer.classList.remove('mobile-open');
+    chatContainer.style.display = "flex";
+    document.body.style.overflow = 'auto';
   }
 });
 
