@@ -32,7 +32,7 @@ header {
   background: none;
   border: none;
   color: white;
-  font-size: 24px;
+  font-size: 28px; /* Увеличена кнопка AI в шапке */
   cursor: pointer;
   padding: 5px;
   margin-left: 15px;
@@ -61,7 +61,7 @@ header {
   .manual { padding:10px; }
   .manual h2 { font-size:16px; }
   .btn-open, .btn-ai { padding:8px; font-size:14px; }
-  .ai-button { font-size: 20px; margin-left: 10px; }
+  .ai-button { font-size: 24px; margin-left: 10px; } /* Увеличена кнопка AI в мобильной версии */
 }
 
 #pdfModal {
@@ -82,26 +82,26 @@ header {
 }
 #pdfIframe { 
   width: 95%; 
-  height: 95%; 
+  height: 100%; /* Растягиваем на всю высоту */
   border: none; 
-  border-radius: 8px; 
+  border-radius: 0; /* Убираем закругление */
   box-shadow: 0 4px 20px rgba(0,0,0,0.5);
   transform: scale(0.9);
   transition: transform 0.3s ease;
 }
 #pdfModal.show #pdfIframe { transform: scale(1); }
 
-/* Кнопка закрыть PDF */
+/* Кнопка закрыть PDF - увеличена */
 #closePdfBtn {
   display: none;
   position: fixed;
-  bottom: 20px;
+  top: 20px; /* Перемещена вверх */
   right: 20px;
-  width: 50px; height: 50px;
+  width: 60px; height: 60px; /* Увеличена */
   border-radius: 50%;
   background: rgba(220,20,60,0.9);
   color: white;
-  font-size: 24px;
+  font-size: 30px; /* Увеличена */
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -135,7 +135,7 @@ header {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 70vh;
   background: white;
   border-radius: 20px 20px 0 0;
   z-index: 10003;
@@ -169,9 +169,14 @@ header {
 #close-chat {
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 28px; /* Увеличена кнопка закрытия чата */
   cursor: pointer;
   color: #dc143c;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #chat-messages {
@@ -411,6 +416,9 @@ function openPDF(url){
   iframe.src = viewerUrl;
   modal.classList.add('show');
   closeBtn.style.display = 'flex';
+  
+  // Блокируем прокрутку основного контента
+  document.body.style.overflow = 'hidden';
 }
 
 // Закрытие PDF
@@ -421,6 +429,10 @@ function closePDF(){
 
   modal.classList.remove('show');
   closeBtn.style.display = 'none';
+  
+  // Восстанавливаем прокрутку основного контента
+  document.body.style.overflow = 'auto';
+  
   setTimeout(()=>{ iframe.src=''; },300);
 }
 
@@ -582,8 +594,13 @@ document.getElementById('chat-overlay').addEventListener('click', closeChat);
 
 // Закрытие чата при нажатии ESC
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Eescape' && chatOpen) {
+  if (e.key === 'Escape' && chatOpen) {
     closeChat();
+  }
+  
+  // Закрытие PDF при нажатии ESC
+  if (e.key === 'Escape' && document.getElementById('pdfModal').classList.contains('show')) {
+    closePDF();
   }
 });
 
