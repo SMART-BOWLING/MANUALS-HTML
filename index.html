@@ -32,7 +32,7 @@ header {
   background: none;
   border: none;
   color: white;
-  font-size: 28px; /* Увеличена кнопка AI в шапке */
+  font-size: 28px;
   cursor: pointer;
   padding: 5px;
   margin-left: 15px;
@@ -61,7 +61,7 @@ header {
   .manual { padding:10px; }
   .manual h2 { font-size:16px; }
   .btn-open, .btn-ai { padding:8px; font-size:14px; }
-  .ai-button { font-size: 24px; margin-left: 10px; } /* Увеличена кнопка AI в мобильной версии */
+  .ai-button { font-size: 24px; margin-left: 10px; }
 }
 
 #pdfModal {
@@ -81,27 +81,27 @@ header {
   opacity: 1;
 }
 #pdfIframe { 
-  width: 95%; 
-  height: 100%; /* Растягиваем на всю высоту */
+  width: 100%; /* Ширина 100% */
+  height: 100%; 
   border: none; 
   border-radius: 0; /* Убираем закругление */
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  box-shadow: none; /* Убираем тень */
   transform: scale(0.9);
   transition: transform 0.3s ease;
 }
 #pdfModal.show #pdfIframe { transform: scale(1); }
 
-/* Кнопка закрыть PDF - увеличена */
+/* Кнопка закрыть PDF - уменьшена и перемещена вниз */
 #closePdfBtn {
   display: none;
   position: fixed;
-  top: 20px; /* Перемещена вверх */
+  bottom: 20px;
   right: 20px;
-  width: 60px; height: 60px; /* Увеличена */
+  width: 50px; height: 50px; /* Уменьшена */
   border-radius: 50%;
   background: rgba(220,20,60,0.9);
   color: white;
-  font-size: 30px; /* Увеличена */
+  font-size: 20px; /* Уменьшена */
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -111,7 +111,7 @@ header {
 }
 #closePdfBtn:hover { background: rgba(220,20,60,1); }
 
-/* Чат - полностью переработан для мобильных устройств */
+/* Чат - модальное окно на весь экран без скруглений */
 #chat-overlay {
   position: fixed;
   top: 0;
@@ -132,18 +132,17 @@ header {
 
 #chat-container {
   position: fixed;
-  bottom: 0;
+  top: 0; /* Начинается с верха */
   left: 0;
   width: 100%;
-  height: 70vh;
+  height: 100%; /* На весь экран */
   background: white;
-  border-radius: 20px 20px 0 0;
+  border-radius: 0; /* Убраны скругления */
   z-index: 10003;
   display: flex;
   flex-direction: column;
   transform: translateY(100%);
   transition: transform 0.3s ease;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
 }
 
 #chat-container.active {
@@ -157,7 +156,7 @@ header {
   padding: 15px 20px;
   border-bottom: 1px solid #eee;
   background: #f8f9fa;
-  border-radius: 20px 20px 0 0;
+  border-radius: 0; /* Убраны скругления */
 }
 
 #chat-header h3 {
@@ -169,7 +168,7 @@ header {
 #close-chat {
   background: none;
   border: none;
-  font-size: 28px; /* Увеличена кнопка закрытия чата */
+  font-size: 28px;
   cursor: pointer;
   color: #dc143c;
   width: 40px;
@@ -259,20 +258,12 @@ header {
 
 /* Адаптивность для чата */
 @media (max-width: 768px) {
-  #chat-container {
-    height: 80vh;
-  }
-  
   .message {
     max-width: 90%;
   }
 }
 
 @media (max-width: 480px) {
-  #chat-container {
-    height: 85vh;
-  }
-  
   #chat-header {
     padding: 12px 15px;
   }
@@ -340,7 +331,7 @@ body.chat-open .container {
 <div id="chat-container">
   <div id="chat-header">
     <h3 id="chat-manual-title">Помощник по ремонту</h3>
-    <button id="close-chat" onclick="closeChat()">×</button>
+    <button id="close-chat" onclick="closeChat()"><i class="fas fa-times"></i></button>
   </div>
   <div id="chat-messages"></div>
   <div id="chat-input-container">
@@ -359,7 +350,7 @@ body.chat-open .container {
 <!-- Модальное окно PDF.js -->
 <div id="pdfModal">
   <iframe id="pdfIframe"></iframe>
-  <div id="closePdfBtn" onclick="closePDF()">×</div>
+  <div id="closePdfBtn" onclick="closePDF()"><i class="fas fa-times"></i></div>
 </div>
 
 <script>
