@@ -13,6 +13,8 @@ body {
   color: #1f2937;
   padding-top: 70px;
 }
+
+/* Шапка */
 header {
   background-color: #1f2937;
   color: white;
@@ -26,44 +28,49 @@ header {
   user-select: none;
   z-index:1000;
 }
-.logo img { width:40px; height:40px; object-fit:cover; transform:translateY(4px);}
-.site-name { flex:1; text-align:center; font-size:20px; font-weight:bold; color:white;}
-.ai-button {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 28px;
-  cursor: pointer;
-  padding: 5px;
-  margin-left: 15px;
-  transition: color 0.3s;
+.logo img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
 }
-.ai-button:hover {
-  color: #d1d5db;
+.site-name {
+  flex: 1;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
 }
 
+/* Поиск */
+.search-container {
+  position: relative;
+}
+.search-container input {
+  padding: 6px 5px 6px 5px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  width: 200px;
+}
+.search-container i {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #374151;
+}
+
+/* Контейнер и карточки PDF */
 .container { max-width:1200px; margin:30px auto; padding:0 20px; }
 .manuals { display:grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap:20px; }
-.manual { background:white; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); padding:15px; display:flex; flex-direction:column; text-align:center; transition: transform 0.2s, box-shadow 0.2s;}
+.manual { background:white; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); padding:15px; display:flex; flex-direction:column; text-align:center; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;}
 .manual:hover { transform: translateY(-5px); box-shadow:0 5px 15px rgba(0,0,0,0.2);}
 .manual h2 { margin:0; font-size:18px; font-weight:600; }
-.manual-buttons { display: flex; gap: 10px; margin-top: 15px; }
-.btn-open { background:#1f2937; color:white; border:2px solid #1f2937; padding:10px; border-radius:6px; cursor:pointer; flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;}
-.btn-open:hover { background:#111827; }
-.btn-ai { background:#d1d5db; color:#374151; border:2px solid #d1d5db; padding:10px; border-radius:6px; cursor:pointer; flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;}
-.btn-ai:hover { background:#9ca3af; }
-.loading { text-align:center; padding:20px; font-size:18px; color:#666; }
-.error { text-align:center; padding:20px; color:#dc2626; background:#fee2e2; border-radius:8px; margin:20px 0;}
 
-@media (max-width: 600px) {
-  .site-name { font-size:16px; }
-  .manuals { grid-template-columns:1fr; gap:15px; }
-  .manual { padding:10px; }
-  .manual h2 { font-size:16px; }
-  .btn-open, .btn-ai { padding:8px; font-size:14px; }
-  .ai-button { font-size: 24px; margin-left: 10px; }
-}
+.loading { text-align:center; padding:20px; font-size:18px; color: #666; }
+.error { text-align:center; padding:20px; color:#dc2626; background:#fee2e2; border-radius:8px; margin:20px 0; }
 
+/* Модалка PDF */
 #pdfModal {
   display: none;
   position: fixed;
@@ -81,27 +88,27 @@ header {
   opacity: 1;
 }
 #pdfIframe { 
-  width: 100%; /* Ширина 100% */
+  width: 100%;
   height: 100%; 
   border: none; 
-  border-radius: 0; /* Убираем закругление */
-  box-shadow: none; /* Убираем тень */
+  border-radius: 0;
+  box-shadow: none;
   transform: scale(0.9);
   transition: transform 0.3s ease;
 }
 #pdfModal.show #pdfIframe { transform: scale(1); }
 
-/* Кнопка закрыть PDF - уменьшена и перемещена вниз */
+/* Кнопка закрыть PDF */
 #closePdfBtn {
   display: none;
   position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 50px; height: 50px; /* Уменьшена */
+  width: 50px; height: 50px;
   border-radius: 50%;
   background: rgba(220,20,60,0.9);
   color: white;
-  font-size: 20px; /* Уменьшена */
+  font-size: 20px;
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -111,206 +118,13 @@ header {
 }
 #closePdfBtn:hover { background: rgba(220,20,60,1); }
 
-/* Чат - модальное окно на весь экран без скруглений */
-#chat-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85);
-  z-index: 10002;
-  display: none;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-#chat-overlay.active {
-  display: block;
-  opacity: 1;
-}
-
-#chat-container {
-  position: fixed;
-  top: 0; /* Начинается с верха */
-  left: 0;
-  width: 100%;
-  height: 100%; /* На весь экран */
-  background: white;
-  border-radius: 0; /* Убраны скругления */
-  z-index: 10003;
-  display: flex;
-  flex-direction: column;
-  transform: translateY(100%);
-  transition: transform 0.3s ease;
-}
-
-#chat-container.active {
-  transform: translateY(0);
-}
-
-#chat-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  border-bottom: 1px solid #eee;
-  background: #f8f9fa;
-  border-radius: 0; /* Убраны скругления */
-}
-
-#chat-header h3 {
-  margin: 0;
-  font-size: 18px;
-  color: #1f2937;
-}
-
-#close-chat {
-  background: none;
-  border: none;
-  font-size: 28px;
-  cursor: pointer;
-  color: #dc143c;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#chat-messages {
-  flex: 1;
-  padding: 15px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.message {
-  max-width: 85%;
-  padding: 12px 16px;
-  border-radius: 18px;
-  line-height: 1.4;
-  word-wrap: break-word;
-}
-
-.user {
-  align-self: flex-end;
-  background: #dc143c;
-  color: white;
-  border-bottom-right-radius: 6px;
-}
-
-.bot {
-  align-self: flex-start;
-  background: #f1f3f5;
-  color: #1f2937;
-  border-bottom-left-radius: 6px;
-}
-
-.thinking {
-  align-self: flex-start;
-  background: #f1f3f5;
-  color: #666;
-  font-style: italic;
-  border-bottom-left-radius: 6px;
-}
-
-#chat-input-container {
-  display: flex;
-  padding: 15px;
-  border-top: 1px solid #eee;
-  background: #f8f9fa;
-  gap: 10px;
-}
-
-#user-input {
-  flex: 1;
-  padding: 12px 16px;
-  border: 1px solid #ddd;
-  border-radius: 24px;
-  outline: none;
-  font-size: 16px;
-}
-
-#send-button {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: #dc143c;
-  color: white;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
-
-#send-button:hover {
-  background: #b01030;
-}
-
-#send-button i {
-  font-size: 18px;
-}
-
-/* Адаптивность для чата */
-@media (max-width: 768px) {
-  .message {
-    max-width: 90%;
-  }
-}
-
-@media (max-width: 480px) {
-  #chat-header {
-    padding: 12px 15px;
-  }
-  
-  #chat-header h3 {
-    font-size: 16px;
-  }
-  
-  .message {
-    max-width: 95%;
-    padding: 10px 14px;
-    font-size: 14px;
-  }
-  
-  #chat-input-container {
-    padding: 12px;
-  }
-  
-  #user-input {
-    padding: 10px 14px;
-    font-size: 16px;
-  }
-  
-  #send-button {
-    width: 45px;
-    height: 45px;
-  }
-}
-
-/* Анимации */
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.message {
-  animation: slideIn 0.3s ease;
-}
-
-/* Скрытие основного контента при открытом чате */
-body.chat-open {
-  overflow: hidden;
-}
-
-body.chat-open .container {
-  filter: blur(3px);
-  pointer-events: none;
+/* Адаптив для мобильных */
+@media (max-width: 600px) {
+  .site-name { font-size: 16px; }
+  .manuals { grid-template-columns:1fr; gap:15px; }
+  .manual { padding:10px; }
+  .manual h2 { font-size:16px; }
+  .search-container input { width: 120px; font-size: 14px; }
 }
 </style>
 </head>
@@ -319,35 +133,18 @@ body.chat-open .container {
 <header>
   <div class="logo"><img src="https://i.postimg.cc/wjGzSY92/1.png" alt="Logo"></div>
   <div class="site-name">MANUALS</div>
-  <button class="ai-button" onclick="openGeneralChat()" title="Помощник AI">
-    <i class="fa-solid fa-brain"></i>
-  </button>
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Поиск PDF..." style="font-size:16px; width:200px;">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </div>
 </header>
-
-<!-- Чат оверлей -->
-<div id="chat-overlay"></div>
-
-<!-- Чат контейнер -->
-<div id="chat-container">
-  <div id="chat-header">
-    <h3 id="chat-manual-title">Помощник по ремонту</h3>
-    <button id="close-chat" onclick="closeChat()"><i class="fas fa-times"></i></button>
-  </div>
-  <div id="chat-messages"></div>
-  <div id="chat-input-container">
-    <input type="text" id="user-input" placeholder="Задайте вопрос по ремонту..." autocomplete="off" style="font-size:16px;">
-    <button id="send-button" onclick="sendMessage()">
-      <i class="fas fa-paper-plane"></i>
-    </button>
-  </div>
-</div>
 
 <div class="container">
   <div id="loading" class="loading">Загрузка мануалов...</div>
   <div class="manuals" id="container"></div>
 </div>
 
-<!-- Модальное окно PDF.js -->
+<!-- Модальное окно PDF -->
 <div id="pdfModal">
   <iframe id="pdfIframe"></iframe>
   <div id="closePdfBtn" onclick="closePDF()"><i class="fas fa-times"></i></div>
@@ -356,12 +153,6 @@ body.chat-open .container {
 <script>
 const REPO = 'SMART-BOWLING/MANUALS';
 const FOLDER = 'manuals';
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwlTZ3gOcFn-iMQnG9AcfUMnmyf1044juZx8Lxno8mB1myLlIqwD0OKKLiewaBJyD8n_Q/exec";
-
-// Переменные для управления состоянием чата
-let chatOpen = false;
-let newMessages = 0;
-let currentManualContext = null; // {name: "Manual Name", url: "https://..."}
 
 // Загрузка PDF с GitHub
 async function loadManuals() {
@@ -383,11 +174,8 @@ async function loadManuals() {
       const rawUrl = `https://raw.githubusercontent.com/${REPO}/main/${FOLDER}/${encodeURIComponent(file.name)}`;
       const card = document.createElement('div');
       card.className='manual';
-      card.innerHTML = `<h2>${name}</h2>
-                        <div class="manual-buttons">
-                          <button class="btn-ai" onclick="openManualChat('${name}', '${rawUrl}')"><i class="fa-solid fa-brain"></i> AI</button>
-                          <button class="btn-open" onclick="openPDF('${rawUrl}')"><i class="fas fa-book"></i> ОТКРЫТЬ</button>
-                        </div>`;
+      card.innerHTML = `<h2>${name}</h2>`;
+      card.onclick = () => openPDF(rawUrl);
       container.appendChild(card);
     });
   } catch(err){
@@ -397,7 +185,7 @@ async function loadManuals() {
   }
 }
 
-// Открытие PDF через PDF.js
+// Открытие PDF
 function openPDF(url){
   const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(url)}#zoom=page-width`;
   const modal = document.getElementById('pdfModal');
@@ -408,7 +196,6 @@ function openPDF(url){
   modal.classList.add('show');
   closeBtn.style.display = 'flex';
   
-  // Блокируем прокрутку основного контента
   document.body.style.overflow = 'hidden';
 }
 
@@ -421,184 +208,23 @@ function closePDF(){
   modal.classList.remove('show');
   closeBtn.style.display = 'none';
   
-  // Восстанавливаем прокрутку основного контента
   document.body.style.overflow = 'auto';
   
   setTimeout(()=>{ iframe.src=''; },300);
 }
 
-// Функции для работы с чатом
-function openManualChat(manualName, manualUrl) {
-  // Устанавливаем контекст текущего мануала
-  currentManualContext = {
-    name: manualName,
-    url: manualUrl
-  };
-  
-  // Обновляем заголовок чата
-  document.getElementById('chat-manual-title').textContent = `Помощник: ${manualName}`;
-  
-  // Открываем чат
-  const overlay = document.getElementById('chat-overlay');
-  const chatContainer = document.getElementById('chat-container');
-  
-  chatOpen = true;
-  document.body.classList.add('chat-open');
-  overlay.classList.add('active');
-  chatContainer.classList.add('active');
-  
-  // Сбрасываем счетчик новых сообщений
-  newMessages = 0;
-  
-  // Очищаем предыдущие сообщения и добавляем приветственное
-  const chatMessages = document.getElementById('chat-messages');
-  chatMessages.innerHTML = '';
-  
-  addMessage(`Привет! Я ваш помощник по мануалу "${manualName}". Задайте мне вопросы по этому руководству, и я постараюсь помочь.`, 'bot');
-  
-  // Фокусируемся на поле ввода
-  setTimeout(() => {
-    document.getElementById('user-input').focus();
-  }, 300);
-}
-
-function openGeneralChat() {
-  // Сбрасываем контекст мануала
-  currentManualContext = null;
-  
-  // Обновляем заголовок чата
-  document.getElementById('chat-manual-title').textContent = 'Помощник по ремонту';
-  
-  // Открываем чат
-  const overlay = document.getElementById('chat-overlay');
-  const chatContainer = document.getElementById('chat-container');
-  
-  chatOpen = true;
-  document.body.classList.add('chat-open');
-  overlay.classList.add('active');
-  chatContainer.classList.add('active');
-  
-  // Сбрасываем счетчик новых сообщений
-  newMessages = 0;
-  
-  // Если чат пустой, добавляем приветственное сообщение
-  const chatMessages = document.getElementById('chat-messages');
-  if (chatMessages.children.length === 0) {
-    addMessage('Привет! Я ваш помощник по ремонту оборудования. Задайте мне любой вопрос, и я постараюсь помочь.', 'bot');
-  }
-  
-  // Фокусируемся на поле ввода
-  setTimeout(() => {
-    document.getElementById('user-input').focus();
-  }, 300);
-}
-
-function closeChat() {
-  const overlay = document.getElementById('chat-overlay');
-  const chatContainer = document.getElementById('chat-container');
-  
-  chatOpen = false;
-  document.body.classList.remove('chat-open');
-  overlay.classList.remove('active');
-  chatContainer.classList.remove('active');
-}
-
-function addMessage(text, sender) {
-  const chatMessages = document.getElementById('chat-messages');
-  const msg = document.createElement('div');
-  
-  msg.classList.add('message');
-  if (sender === 'user') {
-    msg.classList.add('user');
-  } else if (sender === 'bot') {
-    msg.classList.add('bot');
-  } else if (sender === 'thinking') {
-    msg.classList.add('thinking');
-  }
-  
-  msg.textContent = text;
-  chatMessages.appendChild(msg);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-async function sendMessage() {
-  const input = document.getElementById('user-input');
-  const text = input.value.trim();
-  
-  if (!text) return;
-  
-  // Добавляем сообщение пользователя
-  addMessage(text, 'user');
-  input.value = '';
-  
-  // Показываем индикатор "думает..."
-  addMessage('ИИ думает...', 'thinking');
-  
-  try {
-    // Формируем данные для отправки
-    const requestData = {
-      question: text
-    };
-    
-    // Если есть контекст мануала, добавляем его
-    if (currentManualContext) {
-      requestData.context = currentManualContext;
-    }
-    
-    const response = await fetch(GAS_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestData)
-    });
-    
-    const data = await response.json();
-    
-    // Убираем индикатор "думает..."
-    const messages = document.getElementById('chat-messages');
-    if (messages.lastChild.classList.contains('thinking')) {
-      messages.removeChild(messages.lastChild);
-    }
-    
-    // Добавляем ответ бота
-    addMessage(data.answer || 'Не удалось получить ответ. Попробуйте еще раз.', 'bot');
-    
-  } catch (err) {
-    // Убираем индикатор "думает..." в случае ошибки
-    const messages = document.getElementById('chat-messages');
-    if (messages.lastChild.classList.contains('thinking')) {
-      messages.removeChild(messages.lastChild);
-    }
-    
-    addMessage('Ошибка соединения. Проверьте интернет и попробуйте еще раз.', 'bot');
-    console.error('Ошибка отправки сообщения:', err);
-  }
-}
-
-// Обработчики событий
-document.getElementById('user-input').addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') {
-    sendMessage();
-  }
+// Поиск мануалов
+document.getElementById('searchInput').addEventListener('input', function() {
+  const search = this.value.toLowerCase();
+  const manuals = document.querySelectorAll('.manual');
+  manuals.forEach(manual => {
+    const title = manual.querySelector('h2').textContent.toLowerCase();
+    manual.style.display = title.includes(search) ? '' : 'none';
+  });
 });
 
-document.getElementById('chat-overlay').addEventListener('click', closeChat);
-
-// Закрытие чата при нажатии ESC
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape' && chatOpen) {
-    closeChat();
-  }
-  
-  // Закрытие PDF при нажатии ESC
-  if (e.key === 'Escape' && document.getElementById('pdfModal').classList.contains('show')) {
-    closePDF();
-  }
-});
-
-// Инициализация при загрузке
-document.addEventListener('DOMContentLoaded', function() {
-  loadManuals();
-});
+// Инициализация
+document.addEventListener('DOMContentLoaded', loadManuals);
 </script>
 </body>
 </html>
