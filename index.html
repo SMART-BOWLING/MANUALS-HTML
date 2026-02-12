@@ -94,80 +94,8 @@ header {
 .manual:hover { transform: translateY(-5px); box-shadow:0 5px 15px rgba(0,0,0,0.2);}
 .manual h2 { margin:0; font-size:18px; font-weight:600; }
 
-/* Кнопка скачивания */
-.download-btn {
-  background-color: #1f2937;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  margin-top: 10px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-.download-btn:hover {
-  background-color: #2563eb;
-}
-.download-btn:active {
-  transform: translateY(1px);
-}
-
 .loading { text-align:center; padding:20px; font-size:18px; color: #666; }
 .error { text-align:center; padding:20px; color:#dc2626; background:#fee2e2; border-radius:8px; margin:20px 0; }
-
-/* Модалка PDF */
-#pdfModal {
-  display: none;
-  position: fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background: rgba(0,0,0,0.85);
-  z-index:10000;
-  justify-content: center;
-  align-items: center;
-  opacity:0;
-  transition: opacity 0.3s ease;
-}
-#pdfModal.show {
-  display: flex;
-  opacity: 1;
-}
-#pdfIframe { 
-  width: 100%;
-  height: 100%; 
-  border: none; 
-  border-radius: 0;
-  box-shadow: none;
-  transform: scale(0.9);
-  transition: transform 0.3s ease;
-}
-#pdfModal.show #pdfIframe { transform: scale(1); }
-
-/* Кнопка закрыть PDF */
-#closePdfBtn {
-  display: none;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 50px; height: 50px;
-  border-radius: 50%;
-  background: rgba(220,20,60,0.9);
-  color: white;
-  font-size: 20px;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 10001;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-  transition: background 0.2s;
-}
-#closePdfBtn:hover { background: rgba(220,20,60,1); }
 
 /* Адаптив для мобильных */
 @media (max-width: 600px) {
@@ -203,15 +131,34 @@ header {
   <div class="manuals" id="container"></div>
 </div>
 
-<!-- Модальное окно PDF -->
-<div id="pdfModal">
-  <iframe id="pdfIframe"></iframe>
-  <div id="closePdfBtn" onclick="closePDF()"><i class="fas fa-times"></i></div>
-</div>
-
 <script>
-const REPO = 'SMART-BOWLING/MANUALS';
-const FOLDER = 'manuals';
+// Массив с PDF файлами из Cloudinary - все предоставленные ссылки
+const PDF_FILES = [
+  "https://res.cloudinary.com/dplmdnxvk/image/upload/v1770733764/AMF%20ENGINES.pdf",
+  "https://res.cloudinary.com/dplmdnxvk/image/upload/v1770733731/SKYMALL%20STELTRONIC%20USER%20MANUAL.pdf",
+  "https://res.cloudinary.com/dplmdnxvk/image/upload/v1770908899/LANE%20MACHINE%20FLEX%20KHARKOV.pdf",
+  "https://res.cloudinary.com/dplmdnxvk/image/upload/v1770733704/SKYMALL%20SHASSIS.pdf",
+  "https://res.cloudinary.com/dplmdnxvk/image/upload/v1770733674/SKYMALL%20SCORING.pdf",
+  "https://res.cloudinary.com/dplmdnxvk/image/upload/v1770908380/AMF%20DISTRIBUTOR.pdf",
+  "https://res.cloudinary.com/dplmdnxvk/image/upload/v1770733192/VIA%20SKYMALL%20PINSSPITTER%20MC2%20TECH.pdf",
+  "https://res.cloudinary.com/dplmdnxvk/image/upload/v1770733175/LANE%20MACHINE%20SKYMALL.pdf",
+  "https://res.cloudinary.com/dplmdnxvk/image/upload/v1770733122/AMF%2090XLi%20SETTING%20CHASSIS.pdf",
+  "https://res.cloudinary.com/dplmdnxvk/image/upload/v1770733078/VIA%20BLOCKBUSTER%20ACTUATOR.pdf",
+  "https://res.cloudinary.com/dplmdnxvk/image/upload/v1770733045/VIA%20BALL%20RETURN.pdf",
+  "https://res.cloudinary.com/dplmdnxvk/image/upload/v1770733015/AMF%20BALL%20RETURN.pdf",
+  "https://res.cloudinary.com/dplmdnxvk/image/upload/v1770732293/AMF%20PINSPOTTER%2090%20XLi.pdf",
+  "https://res.cloudinary.com/dplmdnxvk/image/upload/v1770731254/AMF%20BALL%20LIFT%20%28PBL%29.pdf"
+];
+
+// Функция для извлечения имени из URL
+function getFileNameFromUrl(url) {
+  // Декодируем URL (чтобы %20 превратились в пробелы)
+  const decodedUrl = decodeURIComponent(url);
+  // Получаем последнюю часть после последнего слеша
+  const fileName = decodedUrl.substring(decodedUrl.lastIndexOf('/') + 1);
+  // Убираем расширение .pdf
+  return fileName.replace('.pdf', '');
+}
 
 // Выпадающий список
 function toggleDropdown() {
@@ -229,84 +176,33 @@ window.addEventListener('click', function(e){
   }
 });
 
-// Загрузка PDF с GitHub
-async function loadManuals() {
+// Загрузка PDF из Cloudinary
+function loadManuals() {
   const loadingEl = document.getElementById('loading');
   const container = document.getElementById('container');
-  try {
-    const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${FOLDER}`);
-    if(!response.ok) throw new Error(`Ошибка GitHub: ${response.status}`);
-    const data = await response.json();
-    const pdfs = data.filter(f => f.type==='file' && f.name.toLowerCase().endsWith('.pdf'));
-    if(pdfs.length===0){
-      container.innerHTML = '<div class="error">PDF-файлы не найдены</div>';
-      loadingEl.style.display='none';
-      return;
-    }
-    loadingEl.style.display='none';
-    pdfs.forEach(file => {
-      const name = file.name.replace('.pdf','').replace(/_/g,' ');
-      const rawUrl = `https://raw.githubusercontent.com/${REPO}/main/${FOLDER}/${encodeURIComponent(file.name)}`;
-      const card = document.createElement('div');
-      card.className='manual';
-      card.innerHTML = `
-        <h2>${name}</h2>
-        <button class="download-btn" onclick="downloadPDF('${rawUrl}', '${file.name}')">
-          <i class="fas fa-download"></i> Скачать
-        </button>
-      `;
-      card.onclick = (e) => {
-        // Предотвращаем открытие PDF при клике на кнопку скачивания
-        if (!e.target.closest('.download-btn')) {
-          openPDF(rawUrl);
-        }
-      };
-      container.appendChild(card);
-    });
-  } catch(err){
-    console.error(err);
-    container.innerHTML = `<div class="error">Ошибка: ${err.message}</div>`;
-    loadingEl.style.display='none';
+  
+  if(PDF_FILES.length === 0) {
+    container.innerHTML = '<div class="error">PDF-файлы не найдены</div>';
+    loadingEl.style.display = 'none';
+    return;
   }
-}
-
-// Скачивание PDF
-function downloadPDF(url, filename) {
-  // Создаем временную ссылку для скачивания
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
-
-// Открытие PDF
-function openPDF(url){
-  const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(url)}#zoom=page-width`;
-  const modal = document.getElementById('pdfModal');
-  const iframe = document.getElementById('pdfIframe');
-  const closeBtn = document.getElementById('closePdfBtn');
-
-  iframe.src = viewerUrl;
-  modal.classList.add('show');
-  closeBtn.style.display = 'flex';
   
-  document.body.style.overflow = 'hidden';
-}
-
-// Закрытие PDF
-function closePDF(){
-  const modal = document.getElementById('pdfModal');
-  const iframe = document.getElementById('pdfIframe');
-  const closeBtn = document.getElementById('closePdfBtn');
-
-  modal.classList.remove('show');
-  closeBtn.style.display = 'none';
+  loadingEl.style.display = 'none';
   
-  document.body.style.overflow = 'auto';
-  
-  setTimeout(()=>{ iframe.src=''; },300);
+  PDF_FILES.forEach(url => {
+    // Автоматически получаем имя из URL
+    const pdfName = getFileNameFromUrl(url);
+    
+    const card = document.createElement('div');
+    card.className = 'manual';
+    card.innerHTML = `<h2>${pdfName}</h2>`;
+    
+    card.onclick = () => {
+      window.open(url, '_blank');
+    };
+    
+    container.appendChild(card);
+  });
 }
 
 // Поиск PDF
