@@ -2,10 +2,11 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Мануалы</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мануалы · загрузка</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
+/* ----- общие стили страницы (без изменений, только добавили слой анимации) ----- */
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
@@ -105,10 +106,67 @@ header {
   .manual h2 { font-size:16px; }
   .search-container input { width: 120px; font-size: 14px; }
 }
+
+/* ----- СТИЛИ АНИМАЦИИ ЗАГРУЗКИ (взяты из первого файла) ----- */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  background: #1f2937;           /* тот же тёмный фон, что и у хедера */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;                  /* поверх всего */
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  /* начальное состояние видимо */
+  opacity: 1;
+  visibility: visible;
+}
+/* класс, который скрывает загрузку */
+.loading-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.logo-wrapper {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.glow-ring {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 100%;
+  background: conic-gradient(#dc143c, transparent 100%);
+  animation: spin 5s linear infinite;
+  filter: blur(20px);
+}
+
+.loading-screen img {
+  width: 120px;
+  z-index: 2;
+}
+
+@keyframes spin {
+  to { transform: rotate(365deg); }
+}
 </style>
 </head>
 <body>
 
+<!-- ===== АНИМАЦИЯ ЗАГРУЗКИ (внедрена) ===== -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="logo-wrapper">
+    <div class="glow-ring"></div>
+    <img src="https://i.postimg.cc/wjGzSY92/1.png" alt="loading logo">
+  </div>
+</div>
+
+<!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
 <header>
   <div class="logo"><img src="https://i.postimg.cc/wjGzSY92/1.png" alt="Logo"></div>
   
@@ -132,7 +190,7 @@ header {
 </div>
 
 <script>
-// Массив с PDF файлами из Cloudinary - все предоставленные ссылки
+// ----- СПИСОК PDF (тот же, что во втором файле) -----
 const PDF_FILES = [
   "https://res.cloudinary.com/dplmdnxvk/image/upload/v1770733764/AMF%20ENGINES.pdf",
   "https://res.cloudinary.com/dplmdnxvk/image/upload/v1770733731/SKYMALL%20STELTRONIC%20USER%20MANUAL.pdf",
@@ -152,11 +210,8 @@ const PDF_FILES = [
 
 // Функция для извлечения имени из URL
 function getFileNameFromUrl(url) {
-  // Декодируем URL (чтобы %20 превратились в пробелы)
   const decodedUrl = decodeURIComponent(url);
-  // Получаем последнюю часть после последнего слеша
   const fileName = decodedUrl.substring(decodedUrl.lastIndexOf('/') + 1);
-  // Убираем расширение .pdf
   return fileName.replace('.pdf', '');
 }
 
@@ -167,45 +222,45 @@ function toggleDropdown() {
   dropdown.style.flexDirection = 'column';
 }
 
-// Закрытие при клике вне
+// Закрытие дропдауна при клике вне
 window.addEventListener('click', function(e){
   const siteName = document.querySelector('.site-name');
   const dropdown = document.getElementById('manualDropdown');
-  if(!siteName.contains(e.target)){
-    dropdown.style.display='none';
+  if (siteName && !siteName.contains(e.target)) {
+    dropdown.style.display = 'none';
   }
 });
 
-// Загрузка PDF из Cloudinary
-function loadManuals() {
+// ----- Загрузка карточек PDF и скрытие анимации -----
+function loadManualsAndHideLoader() {
   const loadingEl = document.getElementById('loading');
   const container = document.getElementById('container');
-  
-  if(PDF_FILES.length === 0) {
+  const loadingScreen = document.getElementById('loadingScreen');
+
+  if (PDF_FILES.length === 0) {
     container.innerHTML = '<div class="error">PDF-файлы не найдены</div>';
     loadingEl.style.display = 'none';
-    return;
+  } else {
+    loadingEl.style.display = 'none';
+    PDF_FILES.forEach(url => {
+      const pdfName = getFileNameFromUrl(url);
+      const card = document.createElement('div');
+      card.className = 'manual';
+      card.innerHTML = `<h2>${pdfName}</h2>`;
+      card.onclick = () => window.open(url, '_blank');
+      container.appendChild(card);
+    });
   }
-  
-  loadingEl.style.display = 'none';
-  
-  PDF_FILES.forEach(url => {
-    // Автоматически получаем имя из URL
-    const pdfName = getFileNameFromUrl(url);
-    
-    const card = document.createElement('div');
-    card.className = 'manual';
-    card.innerHTML = `<h2>${pdfName}</h2>`;
-    
-    card.onclick = () => {
-      window.open(url, '_blank');
-    };
-    
-    container.appendChild(card);
-  });
+
+  // Даём браузеру микро-паузу, чтобы отрисовались карточки, затем плавно убираем загрузку
+  setTimeout(() => {
+    if (loadingScreen) {
+      loadingScreen.classList.add('hidden');
+    }
+  }, 200); // небольшая задержка, чтобы анимация была заметна даже при быстрой загрузке
 }
 
-// Поиск PDF
+// Поиск
 document.getElementById('searchInput').addEventListener('input', function() {
   const search = this.value.toLowerCase();
   const manuals = document.querySelectorAll('.manual');
@@ -215,8 +270,22 @@ document.getElementById('searchInput').addEventListener('input', function() {
   });
 });
 
-// Инициализация
-document.addEventListener('DOMContentLoaded', loadManuals);
+// Инициализация: запускаем загрузку и скрытие лоадера после готовности DOM
+document.addEventListener('DOMContentLoaded', () => {
+  // Имитация небольшой задержки (если PDF грузятся мгновенно — лоадер всё равно увидим)
+  setTimeout(() => {
+    loadManualsAndHideLoader();
+  }, 300); // можно убрать или оставить — просто для плавности
+});
+
+// На случай, если DOMContentLoaded уже сработал (защита)
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  setTimeout(() => {
+    loadManualsAndHideLoader();
+  }, 300);
+}
 </script>
+
+<!-- Примечание: весь функционал сохранён, анимация внедрена и скрывается после рендера карточек -->
 </body>
 </html>
